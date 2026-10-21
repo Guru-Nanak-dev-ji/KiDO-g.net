@@ -292,28 +292,6 @@ textarea{
 </style>
 
 <style>
-/* KIDO TOUCH SLIDER FIX V1 */
-@media (max-width:699px) {
-  .agents, .specialists {
-    width:100% !important;
-    max-width:100% !important;
-    overflow-x:auto !important;
-    overflow-y:hidden !important;
-    touch-action:pan-x !important;
-    -webkit-overflow-scrolling:touch;
-    animation:none !important;
-    scrollbar-width:none;
-  }
-  .agents::-webkit-scrollbar,
-  .specialists::-webkit-scrollbar {
-    display:none;
-  }
-}
-</style>
-
-
-
-<style>
 /* KIDO AGENT PANEL V2 */
 .agents,.specialists {
   animation:none!important;
@@ -389,78 +367,78 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 
 
+
 <style>
-/* KIDO AUTO SLIDER V3 */
-@keyframes kidoAutoMove {
-  0% {transform:translateX(0)}
-  50% {transform:translateX(min(0px, calc(100vw - 100% - 35px)))}
-  100% {transform:translateX(0)}
+/* KIDO ATTACHMENT TRAY FIX */
+.tools{
+  position:fixed !important;
+  z-index:9999 !important;
+  left:12px !important;
+  right:12px !important;
+  bottom:78px !important;
+  top:auto !important;
+  width:auto !important;
+  max-width:496px;
+  margin:auto;
+  max-height:46dvh;
+  overflow-y:auto;
 }
-.agents,.specialists {
-  width:max-content!important;
-  max-width:none!important;
-  overflow:visible!important;
-  animation:kidoAutoMove 32s ease-in-out infinite!important;
-}
-.specialists {
-  animation-duration:65s!important;
-}
-.team,.specialist-team {
-  overflow:hidden!important;
-}
-.team:active .agents,
-.specialist-team:active .specialists {
-  animation-play-state:paused!important;
-}
+.tools.open{display:block !important}
 </style>
 
 <style>
-/* KIDO JS SLIDER V4 */
+/* KIDO MOBILE SCROLL FIX */
+@media(max-width:699px){.chat{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}.quick{touch-action:pan-x!important}}
+</style>
+
+<style>
+/* KIDO CLEAN AUTO SLIDER V5 - one scroll system */
+.team,.specialist-team {overflow:hidden!important}
 .agents,.specialists {
-  animation:none!important;
-  transform:none!important;
+  display:flex!important;
   width:100%!important;
   max-width:100%!important;
   overflow-x:auto!important;
   overflow-y:hidden!important;
+  animation:none!important;
+  transform:none!important;
+  scroll-behavior:auto!important;
   touch-action:pan-x!important;
   -webkit-overflow-scrolling:touch;
-  scroll-behavior:auto!important;
+  scrollbar-width:none;
+  overscroll-behavior-x:contain;
 }
+.agents::-webkit-scrollbar,.specialists::-webkit-scrollbar {display:none}
+.agent,.specialist {flex-shrink:0!important;cursor:pointer}
 </style>
 <script>
+/* KIDO CLEAN AUTO SLIDER V5 */
 document.addEventListener("DOMContentLoaded",()=>{
-  document.querySelectorAll(".agents,.specialists").forEach(slider=>{
-    let paused=false;
-    let resumeAt=0;
-    let last=0;
-    let direction=1;
-    const pause=()=>{
-      paused=true;
-      resumeAt=performance.now()+3500;
-    };
-    slider.addEventListener("pointerdown",pause);
+  document.querySelectorAll(".agents,.specialists").forEach((slider,index)=>{
+    let last=0, direction=1, pausedUntil=0, dragging=false;
+    const speed=index===0?90:115; // pixels per second
+    const pause=()=>{dragging=true;pausedUntil=performance.now()+2400};
+    const release=()=>{dragging=false;pausedUntil=performance.now()+2400};
     slider.addEventListener("touchstart",pause,{passive:true});
-    slider.addEventListener("pointerup",()=>{
-      resumeAt=performance.now()+3500;
-    });
-    slider.addEventListener("touchend",()=>{
-      resumeAt=performance.now()+3500;
-    },{passive:true});
-
-    function animate(now){
-      const dt=last?Math.min(now-last,50):0;
+    slider.addEventListener("touchend",release,{passive:true});
+    slider.addEventListener("touchcancel",release,{passive:true});
+    slider.addEventListener("pointerdown",pause);
+    slider.addEventListener("pointerup",release);
+    slider.addEventListener("pointercancel",release);
+    slider.addEventListener("click",()=>{pausedUntil=performance.now()+2400});
+    function frame(now){
+      const elapsed=last?Math.min((now-last)/1000,.08):0;
       last=now;
-      if(paused && now>=resumeAt)paused=false;
-      const max=slider.scrollWidth-slider.clientWidth;
-      if(!paused && max>1){
-        if(slider.scrollLeft>=max-1)direction=-1;
-        if(slider.scrollLeft<=1)direction=1;
-        slider.scrollLeft+=direction*dt*0.025;
+      const max=Math.max(0,slider.scrollWidth-slider.clientWidth);
+      if(max>2 && !dragging && now>pausedUntil && !document.hidden){
+        const next=slider.scrollLeft+direction*speed*elapsed;
+        if(next>=max){slider.scrollLeft=max;direction=-1}
+        else if(next<=0){slider.scrollLeft=0;direction=1}
+        else slider.scrollLeft=next;
       }
-      requestAnimationFrame(animate);
+      requestAnimationFrame(frame);
     }
-    requestAnimationFrame(animate);
+    requestAnimationFrame(frame);
   });
 });
 </script>
@@ -663,6 +641,10 @@ async function ask(prefill){
  try{
   const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
   status("RESPONSE","HTTP "+r.status+" · parsing JSON");
+  const contentType=r.headers.get("content-type")||"";
+  if(!contentType.toLowerCase().includes("application/json")){
+    throw new Error("AI Chat अभी ऑनलाइन नहीं है। /api/chat के लिए Backend जोड़ना बाकी है।");
+   }
   const d=await r.json();
   if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
   out.textContent=d.answer||"कोई उत्तर नहीं मिला।";
@@ -684,25 +666,3 @@ document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>
 </script>
 </body>
 </html>
-<style>
-/* KIDO ATTACHMENT TRAY FIX */
-.tools{
-  position:fixed !important;
-  z-index:9999 !important;
-  left:12px !important;
-  right:12px !important;
-  bottom:78px !important;
-  top:auto !important;
-  width:auto !important;
-  max-width:496px;
-  margin:auto;
-  max-height:46dvh;
-  overflow-y:auto;
-}
-.tools.open{display:block !important}
-</style>
-
-<style>
-/* KIDO MOBILE SCROLL FIX */
-@media(max-width:699px){.chat{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}.quick{touch-action:pan-x!important}}
-</style>
