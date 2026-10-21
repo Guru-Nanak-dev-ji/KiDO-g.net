@@ -413,6 +413,58 @@ document.addEventListener("DOMContentLoaded",()=>{
   animation-play-state:paused!important;
 }
 </style>
+
+<style>
+/* KIDO JS SLIDER V4 */
+.agents,.specialists {
+  animation:none!important;
+  transform:none!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  touch-action:pan-x!important;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:auto!important;
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelectorAll(".agents,.specialists").forEach(slider=>{
+    let paused=false;
+    let resumeAt=0;
+    let last=0;
+    let direction=1;
+    const pause=()=>{
+      paused=true;
+      resumeAt=performance.now()+3500;
+    };
+    slider.addEventListener("pointerdown",pause);
+    slider.addEventListener("touchstart",pause,{passive:true});
+    slider.addEventListener("pointerup",()=>{
+      resumeAt=performance.now()+3500;
+    });
+    slider.addEventListener("touchend",()=>{
+      resumeAt=performance.now()+3500;
+    },{passive:true});
+
+    function animate(now){
+      const dt=last?Math.min(now-last,50):0;
+      last=now;
+      if(paused && now>=resumeAt)paused=false;
+      const max=slider.scrollWidth-slider.clientWidth;
+      if(!paused && max>1){
+        if(slider.scrollLeft>=max-1)direction=-1;
+        if(slider.scrollLeft<=1)direction=1;
+        slider.scrollLeft+=direction*dt*0.025;
+      }
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+  });
+});
+</script>
+
 </head>
 <body>
 <main class="app">
