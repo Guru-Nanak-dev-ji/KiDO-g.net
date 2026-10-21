@@ -312,37 +312,72 @@ textarea{
 </style>
 
 
+
 <style>
-/* KIDO AGENT AUTO OPEN V1 */
-@media(max-width:699px){
-  .agents,.specialists{
-    width:max-content!important;
-    max-width:none!important;
-    overflow:visible!important;
-    animation:kidoTeamSlide 24s linear infinite!important;
-    touch-action:pan-x!important;
-  }
-  .specialists{
-    animation-duration:38s!important;
-    animation-direction:reverse!important;
-  }
-  .team,.specialist-team{overflow:hidden}
-  .team:active .agents,.specialist-team:active .specialists{
-    animation-play-state:paused!important;
-  }
+/* KIDO AGENT PANEL V2 */
+.agents,.specialists {
+  animation:none!important;
+  transform:none!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  touch-action:pan-x!important;
+  -webkit-overflow-scrolling:touch;
 }
-.agent,.specialist{cursor:pointer}
+.agent,.specialist {cursor:pointer}
+#kidoAgentPanel {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#000b;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+#kidoAgentPanel.open {display:flex}
+#kidoAgentCard {
+  width:min(100%,390px);
+  padding:24px;
+  border:1px solid #ff8429;
+  border-radius:22px;
+  background:linear-gradient(145deg,#301403,#100804);
+  color:#fff;
+  box-shadow:0 0 35px #ff790044;
+  text-align:center;
+}
+#kidoAgentClose {
+  float:right;
+  background:transparent;
+  border:0;
+  color:#fff;
+  font-size:28px;
+  cursor:pointer;
+}
+#kidoAgentIcon {font-size:48px}
+#kidoAgentName {color:#ff9b30}
 </style>
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
+  const panel=document.createElement("div");
+  panel.id="kidoAgentPanel";
+  panel.innerHTML='<div id="kidoAgentCard" role="dialog" aria-modal="true" aria-labelledby="kidoAgentName"><button id="kidoAgentClose" aria-label="बंद करें">✕</button><div id="kidoAgentIcon"></div><h2 id="kidoAgentName"></h2><p id="kidoAgentRole"></p><p id="kidoAgentStatus"></p></div>';
+  document.body.appendChild(panel);
+  const close=()=>panel.classList.remove("open");
+  panel.querySelector("#kidoAgentClose").onclick=close;
+  panel.addEventListener("click",e=>{if(e.target===panel)close()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
   document.querySelectorAll(".agent,.specialist").forEach(el=>{
     el.setAttribute("role","button");
     el.setAttribute("tabindex","0");
     const open=()=>{
-      const name=(el.querySelector(".agentname,.spname")?.textContent||"KiDO Agent").trim();
-      const role=(el.querySelector(".agentrole")?.textContent||"").trim();
-      const state=(el.querySelector(".agentstate,.spstate")?.textContent||"").trim();
-      alert("🍊 "+name+"\n"+(role?role+"\n":"")+(state==="PUBLIC"?"Public Agent":"AI Agent परिचय — अलग Chat अभी उपलब्ध नहीं"));
+      const get=sel=>el.querySelector(sel)?.textContent.trim()||"";
+      panel.querySelector("#kidoAgentIcon").textContent=get(".agenticon,.spicon");
+      panel.querySelector("#kidoAgentName").textContent=get(".agentname,.spname");
+      panel.querySelector("#kidoAgentRole").textContent=get(".agentrole")||"KiDO Specialist AI Team";
+      panel.querySelector("#kidoAgentStatus").textContent="AI Chat अभी उपलब्ध नहीं है";
+      panel.classList.add("open");
     };
     el.addEventListener("click",open);
     el.addEventListener("keydown",e=>{
@@ -351,6 +386,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   });
 });
 </script>
+
 
 </head>
 <body>
