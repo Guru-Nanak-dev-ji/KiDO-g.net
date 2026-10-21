@@ -290,6 +290,68 @@ textarea{
 }
 
 </style>
+
+<style>
+/* KIDO TOUCH SLIDER FIX V1 */
+@media (max-width:699px) {
+  .agents, .specialists {
+    width:100% !important;
+    max-width:100% !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    touch-action:pan-x !important;
+    -webkit-overflow-scrolling:touch;
+    animation:none !important;
+    scrollbar-width:none;
+  }
+  .agents::-webkit-scrollbar,
+  .specialists::-webkit-scrollbar {
+    display:none;
+  }
+}
+</style>
+
+
+<style>
+/* KIDO AGENT AUTO OPEN V1 */
+@media(max-width:699px){
+  .agents,.specialists{
+    width:max-content!important;
+    max-width:none!important;
+    overflow:visible!important;
+    animation:kidoTeamSlide 24s linear infinite!important;
+    touch-action:pan-x!important;
+  }
+  .specialists{
+    animation-duration:38s!important;
+    animation-direction:reverse!important;
+  }
+  .team,.specialist-team{overflow:hidden}
+  .team:active .agents,.specialist-team:active .specialists{
+    animation-play-state:paused!important;
+  }
+}
+.agent,.specialist{cursor:pointer}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelectorAll(".agent,.specialist").forEach(el=>{
+    el.setAttribute("role","button");
+    el.setAttribute("tabindex","0");
+    const open=()=>{
+      const name=(el.querySelector(".agentname,.spname")?.textContent||"KiDO Agent").trim();
+      const role=(el.querySelector(".agentrole")?.textContent||"").trim();
+      const state=(el.querySelector(".agentstate,.spstate")?.textContent||"").trim();
+      alert("🍊 "+name+"\n"+(role?role+"\n":"")+(state==="PUBLIC"?"Public Agent":"AI Agent परिचय — अलग Chat अभी उपलब्ध नहीं"));
+    };
+    el.addEventListener("click",open);
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}
+    });
+  });
+});
+</script>
+
 </head>
 <body>
 <main class="app">
@@ -525,4 +587,9 @@ document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>
   overflow-y:auto;
 }
 .tools.open{display:block !important}
+</style>
+
+<style>
+/* KIDO MOBILE SCROLL FIX */
+@media(max-width:699px){.chat{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}.quick{touch-action:pan-x!important}}
 </style>
