@@ -388,6 +388,31 @@ document.addEventListener("DOMContentLoaded",()=>{
 </script>
 
 
+
+<style>
+/* KIDO AUTO SLIDER V3 */
+@keyframes kidoAutoMove {
+  0% {transform:translateX(0)}
+  50% {transform:translateX(min(0px, calc(100vw - 100% - 35px)))}
+  100% {transform:translateX(0)}
+}
+.agents,.specialists {
+  width:max-content!important;
+  max-width:none!important;
+  overflow:visible!important;
+  animation:kidoAutoMove 32s ease-in-out infinite!important;
+}
+.specialists {
+  animation-duration:65s!important;
+}
+.team,.specialist-team {
+  overflow:hidden!important;
+}
+.team:active .agents,
+.specialist-team:active .specialists {
+  animation-play-state:paused!important;
+}
+</style>
 </head>
 <body>
 <main class="app">
