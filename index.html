@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050301">
+<title>KIDO-G 🍊 | आपका AI साथी</title>
+<style>
+:root{--o:#ff7a00;--a:#ffb13b;--bg:#050301;--panel:rgba(25,13,5,.78);--line:rgba(255,130,20,.32);--txt:#fff6ea;--muted:#c5aa90}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#030201;color:var(--txt);font-family:system-ui,"Noto Sans Devanagari",sans-serif}
+body{background:radial-gradient(circle at 50% -10%,#4b1b00 0,#120802 31%,#030201 70%);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(#ff790008 1px,transparent 1px),linear-gradient(90deg,#ff790008 1px,transparent 1px);background-size:30px 30px}
+.app{width:min(100%,520px);min-height:100vh;margin:auto;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:15px 2px 12px;border-bottom:1px solid var(--line)}
+.avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#ffb13b,#ff7100 60%,#532000);font-size:25px;box-shadow:0 0 22px #ff750066}
+.title{flex:1}.title b{display:block;font-size:17px}.title small{color:var(--muted)}
+.live{font-size:11px;border:1px solid var(--line);border-radius:99px;padding:6px 8px;color:#ffc27d;background:#160b04}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--o);box-shadow:0 0 10px var(--o);animation:pulse 1.3s infinite}@keyframes pulse{50%{opacity:.3}}
+.chat{flex:1;padding:18px 0 155px}
+.hero{text-align:center;padding:28px 14px 22px}
+.orb{width:92px;height:92px;margin:auto;border-radius:50%;display:grid;place-items:center;font-size:47px;background:radial-gradient(circle at 35% 30%,#ffbd58,#ff7600 45%,#451800 72%,#050301 74%);box-shadow:0 0 45px #ff720055;animation:float 3s ease-in-out infinite}@keyframes float{50%{transform:translateY(-7px)}}
+.hero h1{margin:14px 0 5px;font-size:29px}.hero h1 span{color:var(--a);text-shadow:0 0 18px #ff7100}.hero p{margin:0;color:var(--muted);font-size:13px}
+.terminal{margin:5px 0 20px;padding:13px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(32,16,5,.78),rgba(6,4,2,.92));box-shadow:0 10px 35px #0008}
+.termhead{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#ffc078;margin-bottom:8px}.screen{font:12px/1.55 ui-monospace,SFMono-Regular,monospace;color:#d8b999;min-height:38px;white-space:pre-wrap}.screen strong{color:#ffad38}
+.msg{max-width:88%;padding:12px 14px;margin:10px 0;border-radius:18px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+.ai{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:5px}
+.user{margin-left:auto;background:linear-gradient(135deg,#ff9e22,#ff6a00);color:#210b00;border-bottom-right-radius:5px;font-weight:600}
+.quick{display:flex;gap:7px;overflow:auto;padding:3px 0 12px}.quick button{flex:none;width:auto;margin:0;padding:8px 11px;background:#150b05;color:#ffd09a;border:1px solid var(--line);font-size:12px}
+.composer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#050301 18%,#050301 100%)}
+.box{display:flex;align-items:flex-end;gap:8px;padding:8px;background:rgba(25,13,5,.94);border:1px solid #ff842955;border-radius:22px;box-shadow:0 0 28px #ff710018}
+textarea{flex:1;min-height:44px;max-height:125px;border:0;outline:0;resize:none;background:transparent;color:white;padding:11px 8px;font:inherit}
+.send{width:46px;height:46px;flex:none;border-radius:50%;border:0;margin:0;padding:0;font-size:20px;background:linear-gradient(135deg,#ffb13b,#ff6900);color:#210b00;font-weight:900}
+button{cursor:pointer}.foot{text-align:center;color:#8d7765;font-size:10px;padding-top:6px}
+@media(min-width:700px){body{padding:18px}.app{min-height:calc(100vh - 36px);border:1px solid var(--line);border-radius:30px;background:#050301aa;overflow:hidden}.composer{bottom:18px;border-radius:0 0 30px 30px}}
+
+.team{margin:16px 0}.team h2{margin:0 0 5px;font-size:18px;color:#ffad42}.teamnote{margin:0 0 10px;color:#a9907c;font-size:11px}.agents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.agent{padding:11px;background:linear-gradient(145deg,#1b0d05,#0b0704);border:1px solid #ff842944;border-radius:15px}.agenttop{display:flex;align-items:center;gap:7px}.agenticon{font-size:22px}.agentname{font-weight:800;font-size:12px;color:#ffd19a}.agentrole{margin-top:5px;font-size:10px;line-height:1.35;color:#a9907c}.agentstate{display:inline-block;margin-top:7px;padding:3px 6px;border-radius:20px;font-size:8px;font-weight:800;letter-spacing:.5px;background:#ff7a0015;border:1px solid #ff842944;color:#ff9b39}.agent.public .agentstate{color:#72e89b;border-color:#72e89b55;background:#72e89b12}@media(min-width:700px){.agents{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+
+.specialist-team{margin:20px 0}
+.specialist-team h2{margin:0 0 5px;font-size:18px;color:#ffad42}
+.specialists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.specialist{display:grid;grid-template-columns:28px 1fr;align-items:center;padding:9px;background:#120904;border:1px solid #ff842933;border-radius:13px}
+.spicon{font-size:18px}
+.spname{font-size:11px;font-weight:800;color:#f6d5b1}
+.spstate{grid-column:2;font-size:7px;letter-spacing:.5px;color:#9b806c;margin-top:2px}
+@media(min-width:700px){.specialists{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+
+.toolbtn{width:42px;height:42px;flex:none;border-radius:50%;border:1px solid #ff842955;background:#160b04;color:#ffc078;font-size:22px;padding:0}
+.tools{position:fixed;z-index:50;display:none;width:min(310px,calc(100vw - 28px));padding:10px;background:#100803f7;border:1px solid #ff842966;border-radius:18px;box-shadow:0 14px 40px #000b}
+.tools.open{display:block}
+.toolrow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.toolitem{border:1px solid #ff842944;border-radius:12px;background:#1a0d05;color:#ffd19a;padding:9px 4px;font-size:11px;text-align:center}
+.toolitem span{display:block;font-size:21px}
+.toolitem.pending{opacity:.58}
+.emojis{display:flex;flex-wrap:wrap;gap:4px;margin-top:9px;padding-top:9px;border-top:1px solid #ff842933}
+.emoji{width:34px;height:34px;border:0;background:#1a0d05;border-radius:9px;font-size:20px;padding:0}
+.langselect{width:100%;margin-top:9px;padding:9px;border:1px solid #ff842944;border-radius:11px;background:#120904;color:#ffd19a}
+.toolnote{font-size:9px;color:#9b806c;margin-top:7px}
+
+/* KIDO ONE-SCREEN MODE */
+html,body{
+  width:100%;
+  height:100%;
+  height:100dvh;
+  overflow:hidden;
+}
+body{min-height:0}
+.app{
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+  padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+}
+header{
+  flex:0 0 auto;
+  padding:8px 2px;
+}
+.avatar{width:38px;height:38px;font-size:21px}
+.title b{font-size:15px}
+.title small{font-size:10px}
+.live{padding:4px 7px;font-size:9px}
+
+.chat{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:7px 0 92px;
+  scrollbar-width:none;
+}
+.chat::-webkit-scrollbar{display:none}
+
+.hero{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  text-align:left;
+  padding:6px 2px;
+}
+.orb{
+  width:42px;
+  height:42px;
+  flex:none;
+  margin:0;
+  font-size:22px;
+}
+.hero h1{margin:0;font-size:18px}
+.hero p{display:none}
+
+.terminal{
+  margin:5px 0 7px;
+  padding:8px 10px;
+  border-radius:13px;
+}
+.termhead{margin-bottom:4px;font-size:9px}
+.screen{
+  min-height:0;
+  max-height:38px;
+  overflow:auto;
+  font-size:9px;
+  line-height:1.35;
+}
+
+.quick{padding:2px 0 6px}
+.quick button{padding:6px 8px;font-size:10px}
+
+.team,.specialist-team{
+  margin:6px 0;
+  padding:7px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:rgba(18,9,4,.72);
+}
+.team h2,.specialist-team h2{
+  margin:0 0 4px;
+  font-size:13px;
+}
+.teamnote{display:none}
+
+.agents,.specialists{
+  display:flex;
+  gap:5px;
+  overflow-x:auto;
+  margin:0;
+  padding:1px 0 3px;
+  scrollbar-width:none;
+}
+.agents::-webkit-scrollbar,.specialists::-webkit-scrollbar{display:none}
+
+.agent{
+  flex:0 0 105px;
+  padding:6px;
+  border-radius:10px;
+}
+.agenttop{gap:4px}
+.agenticon{font-size:15px}
+.agentname{font-size:9px}
+.agentrole{display:none}
+.agentstate{
+  margin-top:3px;
+  padding:2px 4px;
+  font-size:6px;
+}
+
+.specialist{
+  flex:0 0 112px;
+  display:grid;
+  grid-template-columns:20px 1fr;
+  padding:6px;
+  border-radius:9px;
+}
+.spicon{font-size:14px}
+.spname{font-size:8px}
+.spstate{font-size:6px}
+
+.msg{
+  padding:8px 10px;
+  margin:6px 0;
+  border-radius:13px;
+  font-size:13px;
+  line-height:1.35;
+}
+
+.composer{
+  padding:6px 12px calc(6px + env(safe-area-inset-bottom));
+}
+.box{
+  padding:5px;
+  border-radius:18px;
+}
+textarea{
+  min-height:38px;
+  max-height:78px;
+  padding:8px 6px;
+  font-size:14px;
+}
+.toolbtn,.send{
+  width:38px;
+  height:38px;
+}
+.foot{font-size:8px;padding-top:3px}
+
+@media(min-width:700px){
+  body{padding:0}
+  .app{
+    height:100dvh;
+    min-height:0;
+    border-radius:0;
+  }
+  .composer{bottom:0}
+}
+
+
+/* KIDO CIRCULAR TEAM SLIDERS */
+.team,.specialist-team{
+  overflow:hidden;
+  padding:5px 7px;
+  margin:4px 0;
+}
+.team h2,.specialist-team h2{
+  font-size:11px;
+  margin:0 0 3px;
+}
+
+.agents,.specialists{
+  display:flex !important;
+  width:max-content;
+  gap:9px;
+  overflow:visible !important;
+  padding:2px 0;
+  animation:kidoTeamSlide 24s linear infinite;
+}
+
+.specialists{
+  animation-duration:38s;
+  animation-direction:reverse;
+}
+
+.agent,.specialist{
+  flex:0 0 54px !important;
+  width:54px !important;
+  height:54px !important;
+  min-width:54px;
+  padding:3px !important;
+  border-radius:50% !important;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:radial-gradient(circle,#261106,#0b0502) !important;
+  border:1px solid #ff842966 !important;
+  box-shadow:0 0 9px #ff710018;
+}
+
+.agenttop{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  align-items:center;
+}
+
+.agenticon,.spicon{
+  font-size:17px !important;
+  line-height:17px;
+}
+
+.agentname,.spname{
+  font-size:6.5px !important;
+  line-height:7px;
+  max-width:47px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.agentrole,.agentstate,.spstate{
+  display:none !important;
+}
+
+@keyframes kidoTeamSlide{
+  from{transform:translateX(0)}
+  to{transform:translateX(-45%)}
+}
+
+.team:hover .agents,
+.specialist-team:hover .specialists{
+  animation-play-state:paused;
+}
+
+</style>
+</head>
+<body>
+<main class="app">
+<header>
+<div class="avatar">🍊</div>
+<div class="title"><b>KIDO-G</b><small>आपका AI साथी · Khatri Digital Network</small></div>
+<div class="live"><span class="dot"></span> PUBLIC</div>
+</header>
+<section id="chat" class="chat">
+<div class="hero">
+<div class="orb">🤖</div>
+<h1>नमस्ते, मैं <span>KIDO</span> हूँ</h1>
+<p>एक जीवंत Orange AI interface — बातचीत के लिए तैयार।</p>
+</div>
+<div class="terminal">
+<div class="termhead"><span>◉ KIDO LIVE TERMINAL</span><span id="timer">READY</span></div>
+<div id="terminal" class="screen"><strong>READY</strong>  /api/chat connected on demand
+Execution: DISABLED · Internal services: PRIVATE</div>
+</div>
+<div class="quick">
+<button data-q="KIDO के बारे में बताओ">🍊 KIDO</button>
+<button data-q="आज KDN के लिए क्या कर सकते हैं?">🌍 KDN</button>
+<button data-q="Farming के लिए AI ideas बताओ">🌾 Farming</button>
+<button data-q="Business के लिए ideas बताओ">🏢 Business</button>
+</div>
+
+<div class="team">
+<h2>🤖 KIDO Core Intelligence</h2>
+<p class="teamnote">स्वतंत्र AI identities · Internal controls remain private</p>
+<div class="agents">
+<div class="agent public"><div class="agenttop"><span class="agenticon">🍊</span><span class="agentname">KIDO-G</span></div><div class="agentrole">Public AI साथी</div><span class="agentstate">PUBLIC</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🧠</span><span class="agentname">BRAHMA</span></div><div class="agentrole">ज्ञान · निर्माण · Planning</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🛡️</span><span class="agentname">VISHNU</span></div><div class="agentrole">संरक्षण · संचालन · Maintenance</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">⚙️</span><span class="agentname">MAHESH</span></div><div class="agentrole">परिवर्तन · Cleanup · Rebuild</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">👁️</span><span class="agentname">Sentinel</span></div><div class="agentrole">System health monitoring</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🔎</span><span class="agentname">Diagnostician</span></div><div class="agentrole">Problem · Root-cause analysis</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🩹</span><span class="agentname">Healer</span></div><div class="agentrole">Bounded recovery</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">✅</span><span class="agentname">Verifier</span></div><div class="agentrole">Recovery verification</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🔐</span><span class="agentname">Auditor</span></div><div class="agentrole">Security · Integrity</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">📡</span><span class="agentname">Reporter</span></div><div class="agentrole">Status · Incident reporting</div><span class="agentstate">PRIVATE</span></div>
+<div class="agent"><div class="agenttop"><span class="agenticon">🎛️</span><span class="agentname">Commander</span></div><div class="agentrole">AI Army coordination</div><span class="agentstate">PRIVATE</span></div>
+</div>
+</div>
+
+
+<div class="specialist-team">
+<h2>🌍 KDN Specialist AI Team</h2>
+<p class="teamnote">KIDO ecosystem specialist identities · Roles activate only when connected</p>
+<div class="specialists"><div class="specialist"><span class="spicon">🧮</span><span class="spname">Hisab Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🤖</span><span class="spname">Happy Singh GPT</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🌐</span><span class="spname">Anuvad Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📚</span><span class="spname">Vand Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🎓</span><span class="spname">Sikhiya Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🗂️</span><span class="spname">Mel Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🧘</span><span class="spname">Dheeraj Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🤝</span><span class="spname">Pangat Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">⚖️</span><span class="spname">Nyay Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">✍️</span><span class="spname">Sampadak Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📦</span><span class="spname">Bhandar Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🤲</span><span class="spname">Seva Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">❤️</span><span class="spname">Sehat Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📜</span><span class="spname">Itihas Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📝</span><span class="spname">Kavita Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">✅</span><span class="spname">Sach Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📰</span><span class="spname">Khabar Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🍲</span><span class="spname">KDN Langar Team</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">📥</span><span class="spname">Aamad Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🌱</span><span class="spname">Sukh Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🧰</span><span class="spname">Sambhal Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🍛</span><span class="spname">Langar Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">💗</span><span class="spname">Love Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🚚</span><span class="spname">Rasad Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">💻</span><span class="spname">Code Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🛠️</span><span class="spname">Kirat Singh</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🆘</span><span class="spname">Sahara Kaur</span><span class="spstate">SPECIALIST</span></div><div class="specialist"><span class="spicon">🌾</span><span class="spname">Ann Kaur</span><span class="spstate">SPECIALIST</span></div></div>
+</div>
+
+<div class="msg ai">🧡 अपनी बात नीचे लिखिए। मैं KIDO-G हूँ — आपका स्वतंत्र AI साथी। Image Vision उपलब्ध है। + दबाकर image चुन सकते हैं।</div>
+</section>
+<div class="composer">
+<div class="box">
+<button id="plus" class="toolbtn" type="button" aria-label="Tools">＋</button>
+<textarea id="input" maxlength="2000" rows="1" placeholder="अपनी बात लिखिए…"></textarea>
+<button id="send" class="send" aria-label="भेजें">➤</button>
+</div>
+<div id="kidoTools" class="tools">
+ <div class="toolrow">
+  <button id="imageTool" class="toolitem" type="button"><span>🖼️</span>Image</button>
+   <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+  <button class="toolitem pending" type="button"><span>🎬</span>Video</button>
+  <button id="fileTool" class="toolitem" type="button"><span>📎</span>File</button>
+   <input id="fileInput" type="file" accept=".txt,.csv,.json,text/plain,text/csv,application/json" hidden>
+ </div>
+ <div id="emojiBox" class="emojis"></div>
+ <select id="language" class="langselect">
+  <option value="hi">🇮🇳 हिन्दी</option>
+  <option value="pa">ੴ ਪੰਜਾਬੀ</option>
+  <option value="en">🇨🇦 English</option>
+  <option value="ur">اردو</option>
+  <option value="es">Español</option>
+  <option value="fr">Français</option>
+  <option value="de">Deutsch</option>
+  <option value="ar">العربية</option>
+  <option value="zh">中文</option>
+  <option value="ja">日本語</option>
+ </select>
+ <div class="toolnote">🖼️ Image ready · 📎 TXT/CSV/JSON ready · 🎬 Video pending</div>
+</div>
+
+<div class="foot">🔐 Public chat · Automatic command execution disabled</div>
+</div>
+</main>
+<script>
+"use strict";
+const input=document.getElementById("input"),send=document.getElementById("send"),chat=document.getElementById("chat"),term=document.getElementById("terminal"),timer=document.getElementById("timer");
+let busy=false;
+
+const plus=document.getElementById("plus"),tools=document.getElementById("kidoTools"),language=document.getElementById("language"),emojiBox=document.getElementById("emojiBox");
+ const imageTool=document.getElementById("imageTool"),imageInput=document.getElementById("imageInput");
+ const fileTool=document.getElementById("fileTool"),fileInput=document.getElementById("fileInput");
+ let pendingImage=null,pendingFile=null;
+["😀","😁","😂","😊","😍","🙏","❤️","👍","👏","🎉","🍊","🔱","🤖","🌍","🌾","💡","✅","🔥","📎","🖼️","🎬","📄","💻","🚀"].forEach(e=>{
+ const b=document.createElement("button");
+ b.type="button";b.className="emoji";b.textContent=e;
+ b.onclick=()=>{const a=input.selectionStart||input.value.length,z=input.selectionEnd||a;input.value=input.value.slice(0,a)+e+input.value.slice(z);input.focus()};
+ emojiBox.appendChild(b);
+});
+function placeTools(){
+ const r=plus.getBoundingClientRect();
+ tools.style.left=Math.max(14,Math.min(r.left,innerWidth-324))+"px";
+ tools.style.top=Math.max(10,r.top-tools.offsetHeight-10)+"px";
+}
+plus.onclick=e=>{e.stopPropagation();tools.classList.toggle("open");if(tools.classList.contains("open"))placeTools()};
+tools.onclick=e=>e.stopPropagation();
+document.addEventListener("click",()=>tools.classList.remove("open"));
+language.value=localStorage.getItem("kido-language")||"hi";
+language.onchange=()=>localStorage.setItem("kido-language",language.value);
+
+ imageTool.onclick=()=>{
+   if(busy)return;
+   imageInput.click();
+ };
+
+ imageInput.onchange=()=>{
+   const f=imageInput.files&&imageInput.files[0];
+   if(!f)return;
+   const allowed=["image/jpeg","image/png","image/webp","image/gif"];
+   if(!allowed.includes(f.type)){status("BLOCKED","Unsupported image type");imageInput.value="";return}
+   if(f.size>5*1024*1024){status("BLOCKED","Image limit 5 MB");imageInput.value="";return}
+   const reader=new FileReader();
+   reader.onload=()=>{
+     const result=String(reader.result||"");
+     const comma=result.indexOf(",");
+     if(comma<0){status("ERROR","Image read failed");return}
+     pendingImage={mime:f.type,data:result.slice(comma+1),name:f.name};
+      status("UPLOAD","Image sending · "+f.name); tools.classList.remove("open"); const q=input.value.trim()||"इस image को देखकर बताओ इसमें क्या है।"; ask(q);
+   };
+   reader.onerror=()=>status("ERROR","Image read failed");
+   reader.readAsDataURL(f);
+ };
+
+ fileTool.onclick=()=>{
+   if(busy)return;
+   fileInput.click();
+ };
+
+ fileInput.onchange=()=>{
+   const f=fileInput.files&&fileInput.files[0];
+   if(!f)return;
+
+   const ext=(f.name.split(".").pop()||"").toLowerCase();
+   const mimeByExt={
+     txt:"text/plain",
+     csv:"text/csv",
+     json:"application/json"
+   };
+   const mime=mimeByExt[ext];
+
+   if(!mime){
+     status("BLOCKED","Supported files: TXT, CSV, JSON");
+     fileInput.value="";
+     return;
+   }
+
+   if(f.size>1024*1024){
+     status("BLOCKED","File limit 1 MB");
+     fileInput.value="";
+     return;
+   }
+
+   const reader=new FileReader();
+   reader.onload=()=>{
+     const result=String(reader.result||"");
+     const comma=result.indexOf(",");
+     if(comma<0){
+       status("ERROR","File read failed");
+       return;
+     }
+
+     pendingFile={
+       name:f.name.slice(0,120),
+       mime:mime,
+       data:result.slice(comma+1)
+     };
+
+      status("UPLOAD","File sending · "+f.name); tools.classList.remove("open"); const q=input.value.trim()||"इस attached file को पढ़कर इसका सार बताओ।"; ask(q);
+    };
+    reader.onerror=()=>status("ERROR","File read failed");
+    reader.readAsDataURL(f);
+  };
+
+function add(text,who){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chat.appendChild(d);d.scrollIntoView({behavior:"smooth",block:"end"});return d}
+function status(s,t){term.innerHTML="<strong>"+s+"</strong>  "+t}
+async function ask(prefill){
+ if(busy)return;
+ const text=(prefill||input.value).trim();
+ if(!text)return;
+ input.value="";add(text,"user");busy=true;send.disabled=true;
+ const out=add("🍊 KIDO सोच रहा है…","ai"),start=performance.now();
+ status("REQUEST","POST /api/chat");timer.textContent="0.0s";
+ const tick=setInterval(()=>timer.textContent=((performance.now()-start)/1000).toFixed(1)+"s",100);
+ try{
+  const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
+  status("RESPONSE","HTTP "+r.status+" · parsing JSON");
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
+  out.textContent=d.answer||"कोई उत्तर नहीं मिला।";
+   if(pendingImage){pendingImage=null;imageInput.value="";}
+   if(pendingFile){pendingFile=null;fileInput.value="";}
+   input.placeholder="अपनी बात लिखिए…";
+  status("DONE","KIDO-G response received · Execution: DISABLED");
+ }catch(e){
+  out.textContent="⚠️ KIDO connection error: "+e.message;
+  status("ERROR",e.message);
+ }finally{
+  clearInterval(tick);timer.textContent=((performance.now()-start)/1000).toFixed(1)+"s";busy=false;send.disabled=false;input.focus();
+ }
+}
+send.addEventListener("click",()=>ask());
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}});
+input.addEventListener("input",()=>{input.style.height="44px";input.style.height=Math.min(input.scrollHeight,125)+"px"});
+document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>ask(b.dataset.q)));
+</script>
+</body>
+</html>
+<style>
+/* KIDO ATTACHMENT TRAY FIX */
+.tools{
+  position:fixed !important;
+  z-index:9999 !important;
+  left:12px !important;
+  right:12px !important;
+  bottom:78px !important;
+  top:auto !important;
+  width:auto !important;
+  max-width:496px;
+  margin:auto;
+  max-height:46dvh;
+  overflow-y:auto;
+}
+.tools.open{display:block !important}
+</style>
