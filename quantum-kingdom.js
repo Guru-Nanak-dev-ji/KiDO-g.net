@@ -13,22 +13,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const motion = () => !document.documentElement.classList.contains('kq-motion-off') && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   try { if (localStorage.getItem('kido-motion') === 'off') document.documentElement.classList.add('kq-motion-off'); } catch {}
   const home = el('div', 'kq-home');
+  // These are real, independently layered DOM surfaces, never a reference bitmap.
+  const ornament = (name, count) => { const n = el('div', name); n.setAttribute('aria-hidden', 'true'); for (let i = 0; i < count; i++) n.append(el('i')); return n; };
+  const activateDoor = (node, action) => {
+    if (node.classList.contains('kq-opening')) return;
+    node.classList.add('kq-opening');
+    const finish = () => { node.classList.remove('kq-opening'); action(); };
+    if (motion()) window.setTimeout(finish, 320); else finish();
+  };
   const mast = el('section', 'kq-mast');
   const topbar = el('div', 'kq-topbar');
   topbar.append(el('span', 'kq-edition', 'KHATRI DIGITAL NETWORK'), button('Login', 'Lock', () => openSheet('account'), 'kq-login-toggle'));
   const branding = el('div', 'kq-branding');
   const seal = el('div', 'kq-seal'); seal.append(el('span', '', 'KHALSA'), icon('ChessKnight'));
-  const brand = el('div', 'kq-brand'); brand.innerHTML = '<h1>KiDO<span>-G</span></h1><p>आपका AI साथी</p><small>KHATRI DIGITAL NETWORK</small>';
-  const globe = el('div', 'kq-globe'); globe.append(icon('EarthAsia'));
+  const brand = el('div', 'kq-brand'); brand.innerHTML = '<h1>KiD<span class="kq-orange" aria-label="O">O</span><span>-G</span></h1><p>आपका AI साथी</p><small>KHATRI DIGITAL NETWORK</small>';
+  const globe = el('div', 'kq-globe'); globe.append(icon('EarthAsia'), ornament('kq-longitudes', 3));
   branding.append(seal, brand, globe);
   const shrine = el('div', 'kq-sanctuary'); shrine.setAttribute('aria-label', 'एक ओंकार');
   const faith = el('span', 'kq-faith', 'ੴ');
-  shrine.append(icon('Gopuram'), faith, icon('Gopuram'));
+  const palace = ornament('kq-palace', 7);
+  for (const tower of palace.children) tower.append(el('span', 'kq-cupola'), el('span', 'kq-windows'));
+  const water = ornament('kq-water', 4);
+  shrine.append(palace, faith, water);
   const nav = el('nav', 'kq-nav'); nav.setAttribute('aria-label', 'मुख्य द्वार');
-  nav.append(button('KiDO', 'House', () => chat.scrollTo({ top: 0, behavior: 'smooth' })), button('KDN', 'Globe', () => grid.scrollIntoView({ block: 'center', behavior: 'smooth' })), button('Farming', 'Seedling', () => prompt('खेती के बारे में मेरी मदद करें: ')), button('Business', 'Building', () => prompt('मेरे business के लिए योजना बनाने में मदद करें: ')), button('More', 'Bars', () => openSheet('menu')));
+  nav.append(button('KiDO', 'House', () => chat.scrollTo({ top: 0, behavior: motion() ? 'smooth' : 'instant' })), button('KDN', 'Globe', () => grid.scrollIntoView({ block: 'center', behavior: motion() ? 'smooth' : 'instant' })), button('Farming', 'Seedling', () => prompt('खेती के बारे में मेरी मदद करें: ')), button('Business', 'Building', () => prompt('मेरे business के लिए योजना बनाने में मदद करें: ')), button('More', 'Bars', () => openSheet('menu')));
   mast.append(topbar, branding, shrine, nav);
   const brahma = el('section', 'kq-brahma-panel'); brahma.id = 'kq-brahma'; brahma.setAttribute('aria-labelledby', 'kq-brahma-title');
-  const heading = el('div', 'kq-brahma-top'); const face = el('div', 'kq-brahma-face'); face.append(icon('Robot'));
+  const heading = el('div', 'kq-brahma-top'); const face = el('div', 'kq-brahma-face');
+  face.setAttribute('aria-hidden', 'true');
+  face.innerHTML = '<div class="kq-avatar-body"></div><div class="kq-avatar-head"><i class="kq-eye"></i><i class="kq-eye"></i><i class="kq-smile"></i></div><div class="kq-dastar"><i></i></div>';
+  face.querySelector('.kq-dastar').append(icon('Khanda'));
   const words = el('div'); words.innerHTML = '<h2 id="kq-brahma-title">BRAHMA AI</h2><p>Ask · Search · Create · Learn</p>';
   heading.append(face, words);
   const composer = document.querySelector('.composer');
@@ -54,27 +68,45 @@ document.addEventListener('DOMContentLoaded', () => {
   brahma.append(heading, composer, actions, hint, log);
   const grid = el('section', 'kq-grid'); grid.id = 'kq-doors'; grid.setAttribute('aria-label', 'Digital Kingdom द्वार');
   const entries = [
-    ['Newspaper', 'NEWS', 'World · India · Punjab', 'brahma-news-btn'],
-    ['GraduationCap', 'UPSC', 'Study · Exam · Current', 'brahma-upsc-btn'],
-    ['Landmark', 'GOVERNMENT', 'Schemes · Jobs · Portals', 'brahma-govt-btn'],
-    ['Users', 'SOCIAL SEARCH', 'People · Trends · Media', 'brahma-social-btn'],
-    ['FeatherPointed', 'WRITER ACADEMY', 'Write · Learn · Publish', './writer-academy.html'],
-    ['Palette', 'CREATIVE STUDIO', 'Images · Videos · Apps', './creative-studio.html']
+    ['Newspaper', 'NEWS', 'World · India · Punjab ›', 'brahma-news-btn'],
+    ['GraduationCap', 'UPSC', 'Study · Exam · Current ›', 'brahma-upsc-btn'],
+    ['Landmark', 'GOVERNMENT', 'Schemes · Jobs · Portals ›', 'brahma-govt-btn'],
+    ['Users', 'SOCIAL SEARCH', 'People · Trends · Media ›', 'brahma-social-btn'],
+    ['FeatherPointed', 'WRITER ACADEMY', 'Write · Learn · Publish ›', './writer-academy.html'],
+    ['Palette', 'CREATIVE STUDIO', 'Images · Videos · Apps ›', './creative-studio.html']
   ];
   for (const [art, label, desc, target] of entries) {
     const b = el(target.startsWith('./') ? 'a' : 'button', 'kq-tile');
     if (b.tagName === 'A') b.href = target;
-    else { b.type = 'button'; b.addEventListener('click', () => { document.getElementById(target).click(); web.setAttribute('aria-pressed', String(check.checked)); hint.textContent = label + ' चुना गया। अपना सवाल लिखें।'; focusChat(); }); }
-    const medallion = el('div', 'kq-door-art'); medallion.append(icon(art));
+    else b.type = 'button';
+    b.addEventListener('click', e => {
+      // Preserve normal link semantics for modified clicks and opening in new tabs.
+      if (b.tagName === 'A' && (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)) return;
+      e.preventDefault();
+      activateDoor(b, () => {
+        if (b.tagName === 'A') { window.location.assign(b.href); return; }
+        document.getElementById(target).click();
+        web.setAttribute('aria-pressed', String(check.checked));
+        hint.textContent = label + ' चुना गया। अपना सवाल लिखें।'; focusChat();
+      });
+    });
+    const medallion = el('div', 'kq-door-art'); medallion.setAttribute('aria-hidden', 'true');
+    const scene = el('div', 'kq-mini-scene kq-scene-' + art.toLowerCase());
+    scene.append(ornament('kq-scene-orbit', 2), icon(art), ornament('kq-scene-plinth', 3));
+    if (art === 'Newspaper' || art === 'Users') scene.prepend(icon('EarthAsia'));
+    if (art === 'GraduationCap' || art === 'FeatherPointed') scene.prepend(ornament('kq-books', 3));
+    medallion.append(scene);
+    const leaves = ornament('kq-door-leaves', 2); b.append(leaves);
     b.append(medallion, el('b', '', label), el('small', '', desc)); grid.append(b);
   }
   const aux = el('nav', 'kq-aux'); aux.setAttribute('aria-label', 'अन्य द्वार');
   aux.append(button('AI AGENTS', 'Robot', () => openSheet('agents')), button('FAMILY & GOTRA', 'Users', () => prompt('परिवार और गोत्र के बारे में मेरा सवाल: ')), button('BUSINESS', 'ChartLine', () => prompt('Business के लिए मेरी मदद करें: ')), button('TOOLS & MORE', 'Shapes', () => openSheet('menu')));
   const orbit = el('div', 'kq-orbit-stage'); orbit.setAttribute('aria-hidden', 'true'); orbit.append(icon('EarthAsia'));
   const dock = el('nav', 'kq-dock'); dock.setAttribute('aria-label', 'Quick navigation');
-  const center = button('', 'Khanda', () => chat.scrollTo({ top: 0, behavior: 'smooth' }), 'kq-dock-center'); center.setAttribute('aria-label', 'KiDO Home');
-  dock.append(button('Home', 'House', () => chat.scrollTo({ top: 0, behavior: 'smooth' })), button('Chat', 'Comments', focusChat), center, button('Search', 'MagnifyingGlass', () => { check.checked = true; web.setAttribute('aria-pressed', 'true'); focusChat(); }), button('Menu', 'Shapes', () => openSheet('menu')));
+  const center = button('', 'Khanda', () => chat.scrollTo({ top: 0, behavior: motion() ? 'smooth' : 'instant' }), 'kq-dock-center'); center.setAttribute('aria-label', 'KiDO Home');
+  dock.append(button('Home', 'House', () => chat.scrollTo({ top: 0, behavior: motion() ? 'smooth' : 'instant' })), button('Chat', 'Comments', focusChat), center, button('Search', 'MagnifyingGlass', () => { check.checked = true; web.setAttribute('aria-pressed', 'true'); focusChat(); }), button('Menu', 'Shapes', () => openSheet('menu')));
   home.append(mast, brahma, grid, aux, orbit);
+  app.prepend(ornament('kq-frame-engraving', 4));
   // Collapse the legacy home layout. Retain all nodes, IDs, listeners and API code.
   [...chat.children].forEach(n => n.classList.add('kq-legacy'));
   chat.prepend(home); app.append(dock); document.body.classList.add('kq-ready');
