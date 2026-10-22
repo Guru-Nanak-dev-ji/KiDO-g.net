@@ -54,9 +54,10 @@ export default async function handler(request) {
 
     const payload = JSON.parse(raw);
     message = payload.message;
+    var upscMode = payload.upsc === true;
     var socialMode = payload.social === true;
     var newsMode = payload.news === true;
-    var searchMode = payload.search === true || newsMode || socialMode;
+    var searchMode = payload.search === true || newsMode || socialMode || upscMode;
   } catch {
     return reply(400, { error: "Invalid JSON" });
   }
@@ -86,9 +87,9 @@ export default async function handler(request) {
         model: "gpt-4.1-mini",
         instructions:
           "You are BRAHMA of KIDO ONE. Reply in Hindi. Provide text advice only. Never execute commands, publish, or approve actions. Human approval is required.",
-        input: socialMode ? "Find publicly available social media accounts matching the supplied name or organization on Facebook, Instagram, YouTube, X, LinkedIn, TikTok and official websites. Provide direct profile URLs with source evidence. Distinguish official, likely, and unverified accounts; do not claim verification without evidence. Do not search for private contact details or hidden profiles. User query: "+message : newsMode ? "Find recent, reliably sourced news relevant to the user query. Include publication dates when available, distinguish reporting dates from event dates, avoid inventing headlines, and cite sources. User query: "+message : message,
+        input: upscMode ? "You are a UPSC Civil Services Examination study tutor for India. Explain in Hindi unless the user requests English. Support Prelims GS and CSAT, Mains GS I-IV, Essay, optional-subject guidance, current affairs, answer writing, MCQs with solutions, study plans and revision. For official syllabus, dates, eligibility or notices use the UPSC official website https://upsc.gov.in and cite reliable current sources; never invent dates, cutoffs or exam rules. Distinguish practice questions from actual UPSC past questions. User request: "+message : socialMode ? "Find publicly available social media accounts matching the supplied name or organization on Facebook, Instagram, YouTube, X, LinkedIn, TikTok and official websites. Provide direct profile URLs with source evidence. Distinguish official, likely, and unverified accounts; do not claim verification without evidence. Do not search for private contact details or hidden profiles. User query: "+message : newsMode ? "Find recent, reliably sourced news relevant to the user query. Include publication dates when available, distinguish reporting dates from event dates, avoid inventing headlines, and cite sources. User query: "+message : message,
         ...(searchMode ? { tools: [{ type: "web_search" }], tool_choice: "auto" } : {}),
-        max_output_tokens: (newsMode || socialMode) ? 1200 : (searchMode ? 800 : 150)
+        max_output_tokens: (newsMode || socialMode || upscMode) ? 1200 : (searchMode ? 800 : 150)
       }),
       signal: AbortSignal.timeout(25000)
     });
@@ -113,7 +114,7 @@ export default async function handler(request) {
     return reply(200, {
       answer: answer || "No text returned",
       sources: searchMode ? [...new Map(sources.map(s => [s.url, s])).values()].slice(0,10) : [],
-      mode: socialMode ? "social" : (newsMode ? "news" : (searchMode ? "search" : "chat")),
+      mode: upscMode ? "upsc" : (socialMode ? "social" : (newsMode ? "news" : (searchMode ? "search" : "chat"))),
       execution: "DISABLED"
     });
   } catch {
