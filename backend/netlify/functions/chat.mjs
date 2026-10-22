@@ -52,7 +52,9 @@ export default async function handler(request) {
       return reply(413, { error: "Request too large" });
     }
 
-    message = JSON.parse(raw).message;
+    const payload = JSON.parse(raw);
+    message = payload.message;
+    var searchMode = payload.search === true;
   } catch {
     return reply(400, { error: "Invalid JSON" });
   }
@@ -83,7 +85,8 @@ export default async function handler(request) {
         instructions:
           "You are BRAHMA of KIDO ONE. Reply in Hindi. Provide text advice only. Never execute commands, publish, or approve actions. Human approval is required.",
         input: message,
-        max_output_tokens: 150
+        ...(searchMode ? { tools: [{ type: "web_search" }], tool_choice: "auto" } : {}),
+        max_output_tokens: searchMode ? 800 : 150
       }),
       signal: AbortSignal.timeout(25000)
     });
@@ -94,6 +97,11 @@ export default async function handler(request) {
 
     const data = await response.json();
 
+    const sources = (data.output || []).flatMap(item => item.content || [])
+      .flatMap(item => item.annotations || [])
+      .filter(item => item.type === "url_citation" && typeof item.url === "string")
+      .map(item => ({ title: item.title || item.url, url: item.url }));
+
     const answer = (data.output || [])
       .flatMap(item => item.content || [])
       .filter(item => item.type === "output_text")
@@ -102,6 +110,7 @@ export default async function handler(request) {
 
     return reply(200, {
       answer: answer || "No text returned",
+      sources: searchMode ? sources : [],
       execution: "DISABLED"
     });
   } catch {
