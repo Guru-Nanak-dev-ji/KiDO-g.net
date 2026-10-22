@@ -639,7 +639,7 @@ async function ask(prefill){
  status("REQUEST","POST /api/chat");timer.textContent="0.0s";
  const tick=setInterval(()=>timer.textContent=((performance.now()-start)/1000).toFixed(1)+"s",100);
  try{
-  const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
+  const r=await fetch("https://kido-brahma-ai.netlify.app/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
   status("RESPONSE","HTTP "+r.status+" · parsing JSON");
   const contentType=r.headers.get("content-type")||"";
   if(!contentType.toLowerCase().includes("application/json")){
