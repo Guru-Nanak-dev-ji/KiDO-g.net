@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (account) { account.classList.remove('kq-legacy'); parking.append(account); }
   teams.forEach(t => { t.classList.remove('kq-legacy'); parking.append(t); t.addEventListener('click', e => { if (e.target.closest('.agent,.specialist')) sheet.close(); }, true); });
   const menu = el('div', 'kq-menu');
-  for (const [label, href] of [['Government portals', './government-portals.html'], ['Writer Academy', './writer-academy.html'], ['Creative Studio', './creative-studio.html']]) { const a = el('a', '', label); a.href = href; a.append(icon('ChevronRight')); menu.append(a); }
+  for (const [label, href] of [['Khalsa दर्शन', './khalsa-darshan.html'], ['Government portals', './government-portals.html'], ['Writer Academy', './writer-academy.html'], ['Creative Studio', './creative-studio.html']]) { const a = el('a', '', label); a.href = href; a.append(icon('ChevronRight')); menu.append(a); }
   menu.append(button('Login / Private memory', 'Lock', () => openSheet('account')), button('Core & Specialist AI Team', 'Robot', () => openSheet('agents')));
   const animationButton = button('हल्के animation', 'CirclePause', () => { const off = document.documentElement.classList.toggle('kq-motion-off'); animationButton.setAttribute('aria-pressed', String(!off)); try { localStorage.setItem('kido-motion', off ? 'off' : 'on'); } catch {} });
   animationButton.setAttribute('aria-pressed', String(motion())); menu.append(animationButton); parking.append(menu);
