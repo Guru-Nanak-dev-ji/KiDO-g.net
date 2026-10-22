@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>KiDO-G · Khalsa दर्शन</title>
+  <meta name="theme-color" content="#07090d">
+  <style>
+    :root{
+      --bg:#07090d;
+      --bg-deep:#030507;
+      --navy:#0d1420;
+      --surface:#111923;
+      --surface-2:#171d24;
+      --gold:#d3ad43;
+      --gold-soft:#ecd98f;
+      --gold-deep:#8d6a1e;
+      --ivory:#f3eddf;
+      --ivory-dim:#cfc7b5;
+      --text:#f8f4ea;
+      --muted:#bdb6a8;
+      --line:rgba(211,173,67,.30);
+      --focus:#fff0ad;
+      --shadow:0 18px 60px rgba(0,0,0,.42);
+      --radius:20px;
+      --pad:clamp(14px,4.2vw,20px);
+      --control:48px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans Devanagari", "Noto Sans Gurmukhi", "Segoe UI", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-width:320px;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(211,173,67,.13), transparent 34%),
+        linear-gradient(180deg, var(--navy) 0%, var(--bg) 46%, var(--bg-deep) 100%);
+      color:var(--text);
+      line-height:1.55;
+    }
+    .app{
+      width:min(100%, 430px);
+      margin:0 auto;
+      padding:max(18px, env(safe-area-inset-top)) var(--pad) max(30px, env(safe-area-inset-bottom));
+      position:relative;
+    }
+    .app::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.015), transparent 12%, transparent 88%, rgba(255,255,255,.012)),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.006) 0 1px, transparent 1px 4px);
+      mix-blend-mode:screen;
+      opacity:.45;
+    }
+    .frame{
+      border:1px solid rgba(211,173,67,.34);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.018), rgba(255,255,255,.003)), rgba(3,6,10,.40);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06), inset 0 0 0 1px rgba(141,106,30,.08), var(--shadow);
+      overflow:hidden;
+    }
+    .top-rail{
+      height:10px;
+      background:linear-gradient(90deg, var(--gold-deep), var(--gold-soft) 22%, var(--gold) 48%, var(--gold-soft) 72%, var(--gold-deep));
+      box-shadow:0 2px 18px rgba(211,173,67,.18);
+    }
+    header{padding:22px 18px 8px}
+    .marker{color:var(--gold-soft);font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+    h1{margin:.55rem 0 .8rem;font-size:clamp(2rem,9vw,2.65rem);line-height:1.10;letter-spacing:-.02em}
+    .intro{margin:0;color:var(--ivory);font-size:1rem}
+    .trust{
+      display:inline-flex;
+      align-items:center;
+      gap:.48rem;
+      margin-top:16px;
+      min-height:44px;
+      padding:10px 13px;
+      border:1px solid var(--gold);
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(211,173,67,.12), rgba(211,173,67,.05));
+      color:var(--gold-soft);
+      font-size:.88rem;
+      font-weight:700;
+    }
+    .trust-note{margin:10px 0 0;color:var(--muted);font-size:.84rem}
+    .courtyard{padding:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .principle{
+      position:relative;
+      min-height:166px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:linear-gradient(145deg, rgba(255,255,255,.035), transparent 34%), linear-gradient(180deg, #171e27, #0f151d);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), inset 0 -1px 0 rgba(236,217,143,.04), 0 10px 24px rgba(0,0,0,.24);
+      overflow:hidden;
+    }
+    .principle::after{
+      content:"";
+      position:absolute;
+      inset:auto 14px 10px;
+      height:2px;
+      border-radius:999px;
+      background:linear-gradient(90deg, transparent, rgba(243,237,223,.45), transparent);
+    }
+    .principle .icon{font-size:1.25rem;display:block;margin-bottom:8px}
+    .principle h2{margin:0 0 8px;font-size:1.05rem;color:var(--ivory)}
+    .principle p{margin:0;color:#e7e0d3;font-size:.92rem;line-height:1.48}
+    .micro{margin-top:10px !important;color:var(--gold-soft) !important;font-size:.78rem !important;font-weight:700}
+    .wide-card{
+      margin:6px 18px 18px;
+      border:1px solid rgba(236,217,143,.35);
+      border-radius:20px;
+      background:linear-gradient(160deg, rgba(243,237,223,.08), transparent 28%), linear-gradient(180deg, #171b20, #0d1218);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 16px 34px rgba(0,0,0,.30);
+      overflow:hidden;
+    }
+    .carved-edge{height:7px;background:linear-gradient(90deg, var(--gold-deep), var(--gold-soft), var(--gold), var(--gold-soft), var(--gold-deep));opacity:.88}
+    .card-body{padding:18px}
+    .card-body h2{margin:0 0 9px;font-size:1.2rem;color:var(--ivory)}
+    .button-row{display:grid;gap:10px;margin-top:14px}
+    button{appearance:none;border:0;font:inherit}
+    .btn{
+      min-height:var(--control);
+      width:100%;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .18s ease,border-color .18s ease,background .18s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .btn-primary{background:linear-gradient(180deg, var(--gold-soft), var(--gold));color:#090a0c;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+    .btn-secondary{border:1px solid var(--gold);background:rgba(211,173,67,.06);color:var(--ivory)}
+    .expanded{margin-top:14px;padding-top:14px;border-top:1px solid rgba(211,173,67,.20)}
+    .expanded[hidden]{display:none}
+    .expanded p{margin:.75rem 0;color:#ece5d8}
+    .sequence{margin:14px 0;padding:14px;border-left:3px solid var(--gold);background:rgba(211,173,67,.05);color:var(--ivory);border-radius:0 12px 12px 0}
+    .closing{color:var(--gold-soft) !important;font-weight:800}
+    .seva{
+      margin:0 18px 20px;
+      padding:18px;
+      border-radius:22px;
+      border:1px solid rgba(211,173,67,.40);
+      background:linear-gradient(180deg, rgba(243,237,223,.07), transparent 26%), linear-gradient(135deg, #171c24, #0c1117 70%);
+      position:relative;
+      overflow:hidden;
+    }
+    .seva::before{content:"";position:absolute;width:58%;height:3px;left:21%;top:0;background:linear-gradient(90deg, transparent, var(--gold-soft), transparent)}
+    .seva h2{margin:0 0 8px;font-size:1.24rem;color:var(--ivory)}
+    .seva p{margin:.6rem 0;color:#e8e0d2}
+    .status{display:inline-block;margin:6px 0 2px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);color:var(--ivory-dim);font-size:.78rem;font-weight:800;letter-spacing:.02em}
+    .preview{margin-top:14px;border-top:1px solid rgba(211,173,67,.20);padding-top:14px}
+    .preview[hidden]{display:none}
+    .preview-card{border-radius:16px;border:1px solid rgba(243,237,223,.20);background:rgba(243,237,223,.045);padding:14px}
+    .preview-card h3{margin:0 0 8px;color:var(--gold-soft);font-size:1rem}
+    .preview-card ul{margin:8px 0 0;padding-left:1.2rem;color:#e6dfd2}
+    .preview-card li{margin:.35rem 0}
+    .footer-note{margin:0 18px 18px;color:var(--muted);font-size:.82rem;text-align:center}
+    @media (max-width:349px){.courtyard{grid-template-columns:1fr}h1{font-size:2rem}}
+    @media (min-width:350px) and (max-width:359px){.principle{min-height:178px}}
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+    }
+  .page-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 18px 0;
+}
+.page-nav a{
+  min-height:48px;
+  display:inline-flex;
+  align-items:center;
+  padding:10px 13px;
+  border:1px solid var(--gold);
+  border-radius:14px;
+  color:var(--gold-soft);
+  text-decoration:none;
+  font-weight:800;
+  background:rgba(211,173,67,.06);
+}
+.page-nav a:focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:3px;
+}
+.page-nav span{
+  color:var(--muted);
+  font-size:.82rem;
+  font-weight:700;
+}
+.home-return{
+  margin:0 18px 18px;
+}
+.home-return a{
+  min-height:48px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--gold);
+  border-radius:14px;
+  color:var(--ivory);
+  text-decoration:none;
+  font-weight:800;
+  background:rgba(211,173,67,.06);
+}
+.home-return a:focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:3px;
+}
+  </style>
+</head>
+<body>
+  <main class="app" id="top">
+    <section class="frame" aria-labelledby="screen-title">
+      <div class="top-rail" aria-hidden="true"></div>
+      <nav class="page-nav" aria-label="स्थानीय navigation">
+        <a href="./index.html">← KiDO-G Home</a>
+        <span>खालसा दर्शन द्वार</span>
+      </nav>
+      <header>
+        <div class="marker">03 · हमारी दर्शन-रेखा</div>
+        <h1 id="screen-title">विचार से जीवन की ओर</h1>
+        <p class="intro">इतिहास और प्रेरणा के बाद, अब KDN की अपनी दर्शन-रेखा सामने आती है। यह किसी पंथ की आधिकारिक शिक्षा नहीं, बल्कि जिम्मेदारी, सेवा और पारदर्शिता पर आधारित हमारा प्रस्ताव है।</p>
+        <div class="trust" role="note" aria-label="KDN प्रस्ताव और व्यक्तिगत दर्शन"><span aria-hidden="true">💡</span><span>KDN प्रस्ताव / व्यक्तिगत दर्शन</span></div>
+        <p class="trust-note">इस स्क्रीन में कोई नया historical, Gurbani या doctrinal claim नहीं जोड़ा गया है।</p>
+      </header>
+
+      <section class="courtyard" aria-label="KDN के छह दर्शन सिद्धांत">
+        <article class="principle"><span class="icon" aria-hidden="true">⚖️</span><h2>जिम्मेदारी</h2><p>अधिकार से पहले जवाबदेही। जिस निर्णय का असर लोगों पर पड़े, उसका कारण और जिम्मेदारी भी साफ़ होनी चाहिए।</p><p class="micro">Power नहीं — Responsibility.</p></article>
+        <article class="principle"><span class="icon" aria-hidden="true">🤝</span><h2>सेवा</h2><p>सेवा केवल दया दिखाना नहीं। हमारे लिए सेवा का अर्थ है — अपना हिस्सा निभाना और दूसरे की गरिमा बनाए रखना।</p><p class="micro">नारे से पहले काम।</p></article>
+        <article class="principle"><span class="icon" aria-hidden="true">🔎</span><h2>सच</h2><p>किसी बात को केवल इसलिए सच न मानें क्योंकि वह हमारी पसंद की है। दावा हो तो जाँच हो; गलती हो तो सुधार हो।</p><p class="micro">दावे से पहले सत्यापन।</p></article>
+        <article class="principle"><span class="icon" aria-hidden="true">🌱</span><h2>छोटा प्रमाण</h2><p>बड़े बदलाव का दावा करने से पहले उसे छोटे, सुरक्षित और मापने योग्य रूप में आज़माएँ। जो काम करे, उसी को आगे बढ़ाएँ।</p><p class="micro">पहले प्रमाण, फिर विस्तार।</p></article>
+        <article class="principle"><span class="icon" aria-hidden="true">🧭</span><h2>साझा व्यवस्था</h2><p>अलग पहचानें साथ रह सकती हैं। व्यवस्था का काम सबको एक जैसा बनाना नहीं, बल्कि सम्मान के साथ साथ चलने की जगह बनाना है।</p><p class="micro">एक दुनिया • कई द्वार।</p></article>
+        <article class="principle"><span class="icon" aria-hidden="true">🪞</span><h2>पारदर्शिता</h2><p>नियम, फैसले और सीमाएँ छिपी हुई न रहें। लोग जान सकें कि क्या प्रस्ताव है, क्या अभी प्रयोग है, और क्या अभी केवल विचार है।</p><p class="micro">दावा जितना बड़ा, हिसाब उतना साफ़।</p></article>
+      </section>
+
+      <section class="wide-card" aria-labelledby="full-philosophy-title">
+        <div class="carved-edge" aria-hidden="true"></div>
+        <div class="card-body">
+          <h2 id="full-philosophy-title">पूरा दर्शन</h2>
+          <p style="margin:0;color:var(--muted)">यह विस्तृत हिस्सा स्थानीय accordion में खुलता है; कोई बाहरी route नहीं।</p>
+          <div class="button-row">
+            <button class="btn btn-primary" id="philosophy-toggle" type="button" aria-expanded="false" aria-controls="philosophy-expanded">पूरा दर्शन पढ़ें ▾</button>
+          </div>
+          <div class="expanded" id="philosophy-expanded" hidden>
+            <p>KDN की दर्शन-रेखा किसी तैयार सत्ता-मॉडल का दावा नहीं करती। यह एक प्रश्न से शुरू होती है: क्या हम ऐसी व्यवस्था बना सकते हैं जहाँ इंसान की गरिमा, सेवा, सत्यापन और जिम्मेदारी को पहले स्थान पर रखा जाए?</p>
+            <div class="sequence" aria-label="दर्शन का क्रम">पहले मनुष्य।<br>फिर संबंध।<br>फिर जिम्मेदारी।<br>फिर व्यवस्था।</div>
+            <p>जहाँ इतिहास का संदर्भ होगा, वहाँ स्रोत अलग होगा। जहाँ KDN की अपनी सोच होगी, वहाँ उसे प्रस्ताव के रूप में ही लिखा जाएगा।</p>
+            <p>हम बड़े शब्दों से पहले छोटे प्रमाण चाहते हैं। हम शक्ति से पहले जवाबदेही चाहते हैं। हम सेवा को प्रदर्शन नहीं, साझा जिम्मेदारी मानते हैं। और हम ऐसी व्यवस्था चाहते हैं जो अपनी सीमाएँ भी खुले रूप में बताए।</p>
+            <p class="closing">“दर्शन तभी जीवित है, जब वह व्यवहार में उतर सके।”</p>
+            <div class="trust" role="note" aria-label="यह भाग KDN प्रस्ताव है"><span aria-hidden="true">💡</span><span>KDN प्रस्ताव</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="seva" id="seva-bridge" aria-labelledby="seva-title">
+        <div class="trust" role="note" aria-label="KDN प्रस्ताव और व्यक्तिगत दर्शन"><span aria-hidden="true">💡</span><span>KDN प्रस्ताव / व्यक्तिगत दर्शन</span></div>
+        <h2 id="seva-title">दर्शन का अगला पड़ाव — सेवा</h2>
+        <p>विचार अकेला पर्याप्त नहीं। अगला प्रश्न है: इसे परिवार, पड़ोस और समुदाय के जीवन में छोटे, सुरक्षित और स्वैच्छिक रूप में कैसे आज़माया जाए?</p>
+        <span class="status">LOCAL PREVIEW · LIVE ROUTE नहीं</span>
+        <p style="font-size:.9rem;color:var(--muted)">khalsa.homes को KDN के seva / community / family-model door के रूप में रखा गया है। यह khalsa.website का duplicate site नहीं होगा; दोनों एक ही KDN system के अलग द्वार हैं।</p>
+        <div class="button-row">
+          <button class="btn btn-primary" id="seva-toggle" type="button" aria-expanded="false" aria-controls="seva-preview">Community &amp; Seva — स्थानीय preview देखें</button>
+        </div>
+        <div class="preview" id="seva-preview" hidden>
+          <div class="preview-card">
+            <h3>स्थानीय Seva preview</h3>
+            <p style="margin:0;color:#e8e0d2">यह सिर्फ इस candidate के अंदर का preview है — कोई external site नहीं खुलती।</p>
+            <ul>
+              <li>परिवार / पड़ोस / community-level प्रयोग</li>
+              <li>छोटे, सुरक्षित और स्वैच्छिक pilots</li>
+              <li>सेवा को साझा जिम्मेदारी की तरह देखना</li>
+            </ul>
+          </div>
+          <div class="button-row"><button class="btn btn-secondary" id="seva-return" type="button">दर्शन पर लौटें ↑</button></div>
+        </div>
+      </section>
+
+      <div class="home-return"><a href="./index.html">KiDO-G Home पर लौटें ↑</a></div>
+      <p class="footer-note">KIDO-G · दर्शन द्वार · KDN प्रस्ताव स्पष्ट रूप से लेबल किए गए हैं।</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const philosophyToggle = document.getElementById('philosophy-toggle');
+      const philosophyExpanded = document.getElementById('philosophy-expanded');
+      const sevaToggle = document.getElementById('seva-toggle');
+      const sevaPreview = document.getElementById('seva-preview');
+      const sevaReturn = document.getElementById('seva-return');
+
+      function setExpanded(button, panel, expanded, openLabel, closedLabel) {
+        button.setAttribute('aria-expanded', String(expanded));
+        panel.hidden = !expanded;
+        button.textContent = expanded ? openLabel : closedLabel;
+      }
+
+      philosophyToggle.addEventListener('click', function () {
+        const expanded = philosophyToggle.getAttribute('aria-expanded') === 'true';
+        setExpanded(philosophyToggle, philosophyExpanded, !expanded, 'दर्शन समेटें ▴', 'पूरा दर्शन पढ़ें ▾');
+      });
+
+      sevaToggle.addEventListener('click', function () {
+        const expanded = sevaToggle.getAttribute('aria-expanded') === 'true';
+        setExpanded(sevaToggle, sevaPreview, !expanded, 'स्थानीय Seva preview बंद करें', 'Community & Seva — स्थानीय preview देखें');
+        if (!expanded) {
+          requestAnimationFrame(function () { sevaReturn.focus(); });
+        }
+      });
+
+      sevaReturn.addEventListener('click', function () {
+        setExpanded(sevaToggle, sevaPreview, false, 'स्थानीय Seva preview बंद करें', 'Community & Seva — स्थानीय preview देखें');
+        document.getElementById('full-philosophy-title').scrollIntoView({block:'start'});
+        philosophyToggle.focus();
+      });
+    })();
+  </script>
+</body>
+</html>
