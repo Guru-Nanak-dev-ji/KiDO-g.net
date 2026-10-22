@@ -21,11 +21,41 @@ document.addEventListener("DOMContentLoaded",()=>{
  const actions=el("div","kq-actions");
  [["🔎 Web Search",()=>{const c=document.getElementById("brahma-web-search");c.checked=!c.checked;input.focus()}],["💬 Chat",()=>input.focus()],["📎 Attach",()=>document.getElementById("plus")?.click()],["⚙️ More",()=>document.getElementById("kq-more")?.classList.toggle("open")]].forEach(([name,fn])=>{const b=el("button","",name);b.type="button";b.addEventListener("click",fn);actions.append(b)});
  const more=el("div","kq-more");more.id="kq-more";more.innerHTML='<a href="./government-portals.html">🏛️ सभी सरकारी पोर्टल</a><a href="./writer-academy.html">✍️ Writer Academy & Agents</a><a href="./creative-studio.html">🎨 Creative Studio</a>';
- const first=chat.firstElementChild;chat.insertBefore(banner,first);banner.after(nav,title,actions,section,grid,more);
+ const stage=el("div","kq-stage");stage.setAttribute("aria-label","जीवंत सुनहरा डिजिटल संसार");stage.append(el("span","kq-eagle","🦅"));
+ const brahma=el("section","kq-brahma-panel");
+ const top=el("div","kq-brahma-top");top.innerHTML='<div class="kq-brahma-face" aria-hidden="true">👳🏻‍♂️</div><div><h2>BRAHMA AI</h2><p>Ask · Search · Create · Learn</p></div>';
+ brahma.append(top,actions);
+ const aux=el("div","kq-aux");
+ [["🤖","AI AGENTS",()=>document.querySelector(".team")?.scrollIntoView({behavior:"smooth"})],["👪","FAMILY",()=>more.classList.toggle("open")],["📈","BUSINESS",()=>{input.value="Business के लिए ideas बताओ";input.focus()}],["✦","MORE",()=>more.classList.toggle("open")]].forEach(([icon,name,fn])=>{const b=el("button");b.type="button";b.append(el("span","",icon),document.createTextNode(name));b.addEventListener("click",fn);aux.append(b)});
+ const first=chat.firstElementChild;chat.insertBefore(banner,first);banner.after(stage,nav,brahma,section,grid,aux,more);
  // Hide duplicated large legacy controls without deleting them or their event handlers.
  ["brahma-news-btn","brahma-social-btn","brahma-upsc-btn","brahma-govt-btn"].forEach(id=>{const b=document.getElementById(id);if(b){let p=b.parentElement;if(p&&p.parentElement===chat)p.classList.add("kq-old-section")}});
  for(const a of chat.querySelectorAll('a[href="./creative-studio.html"],a[href="./writer-academy.html"],a[href="./government-portals.html"]')){const p=a.parentElement;if(p&&p.parentElement===chat)p.classList.add("kq-old-section")}
  const dock=el("nav","kq-dock");dock.setAttribute("aria-label","Quick navigation");
  [["⌂","Home",()=>chat.scrollTo({top:0,behavior:"smooth"})],["☏","Chat",()=>input.focus()],["✦","Search",()=>{document.getElementById("brahma-web-search").checked=true;input.focus()}],["☷","Menu",()=>{more.classList.toggle("open");more.scrollIntoView({block:"nearest",behavior:"smooth"})}]].forEach(([icon,label,fn])=>{const b=el("button");b.type="button";b.append(el("span","",icon),document.createTextNode(label));b.addEventListener("click",fn);dock.append(b)});
  document.body.append(dock);
+ // Legacy controls remain connected to the existing backend but are visually collapsed.
+ const terminal=chat.querySelector(".terminal");if(terminal)terminal.classList.add("kq-hidden-original");
+ const checkbox=document.getElementById("brahma-web-search");if(checkbox){const wrapper=checkbox.closest("div");if(wrapper&&wrapper.parentElement===chat)wrapper.classList.add("kq-hidden-original")}
+ const quick=chat.querySelector(".quick");if(quick)quick.classList.add("kq-hidden-original");
+ const legacy=chat.querySelector(".msg.ai");if(legacy&&legacy.textContent.includes("अपनी बात नीचे"))legacy.classList.add("kq-hidden-original");
+ // Existing authentication form is moved, never cloned or rewritten.
+ const sheet=el("div","kq-login-sheet");sheet.id="kq-login-sheet";
+ const inner=el("div","kq-login-inner");const head=el("div","kq-login-head");head.append(el("strong","","🔐 BRAHMA Private Login"));
+ const close=el("button","","✕");close.type="button";close.setAttribute("aria-label","Close login");close.onclick=()=>sheet.classList.remove("open");head.append(close);inner.append(head);sheet.append(inner);document.body.append(sheet);
+ sheet.addEventListener("click",e=>{if(e.target===sheet)sheet.classList.remove("open")});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")sheet.classList.remove("open")});
+ const loginBtn=el("button","kq-login-toggle","🔐 Login");loginBtn.type="button";loginBtn.onclick=()=>sheet.classList.add("open");document.querySelector("header")?.append(loginBtn);
+ function relocateLogin(){
+  if(inner.querySelector("input[type=password]"))return true;
+  const pass=Array.from(document.querySelectorAll('input[type="password"]')).find(e=>!sheet.contains(e));
+  if(!pass)return false;
+  let root=pass.closest("form")||pass.parentElement?.parentElement?.parentElement;
+  if(!root||root===document.body||root===chat)return false;
+  inner.append(root);return true;
+ }
+ relocateLogin();
+ const observer=new MutationObserver(()=>{if(relocateLogin())observer.disconnect()});observer.observe(document.body,{subtree:true,childList:true});
+ setTimeout(()=>observer.disconnect(),15000);
+
 });
