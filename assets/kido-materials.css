@@ -1,0 +1,27 @@
+/* KDN Room 16 -> KIDO-G material tokens. Procedural CSS only; no external textures/assets. */
+:root{
+ --kido-gold-polished:#D4AF37;--kido-gold-polished-hi:#FFF1A8;--kido-gold-polished-shadow:#6E4308;
+ --kido-gold-brushed:#C89B2C;--kido-gold-brushed-hi:#E8C96A;--kido-gold-brushed-shadow:#5C3B0D;
+ --kido-gold-aged:#9C6A24;--kido-gold-aged-hi:#C79A4B;--kido-gold-aged-shadow:#3D2A12;
+ --kido-ivory:#F1E5C8;--kido-ivory-hi:#FFF8E8;--kido-ivory-shadow:#A99B7D;
+ --kido-deep-navy:#050A12;
+}
+/* POLISHED_GOLD_01: frame + high-value edges */
+.kq-ready .app{
+ border-color:var(--kido-gold-polished);
+ box-shadow:0 0 0 2px var(--kido-gold-polished-shadow),0 0 0 5px var(--kido-gold-brushed),0 0 0 6px var(--kido-gold-polished-hi),inset 0 0 0 2px var(--kido-gold-aged),inset 0 0 22px #d4af3766,0 18px 50px #000;
+}
+/* BRUSHED_GOLD_01: gates; directional fine grain is CSS-generated */
+.kq-ready .kq-tile{
+ border-color:var(--kido-gold-brushed-hi);
+ background:linear-gradient(100deg,#c89b2c18,#fff1a814 2%,transparent 3% 8%,#c89b2c12 9% 10%,transparent 11%),radial-gradient(ellipse at 50% 25%,#9b631f66,#100e0a 50%,#030606 75%);
+ box-shadow:inset 0 0 0 2px var(--kido-gold-polished-shadow),inset 0 0 0 4px #c89b2c55,0 4px 0 var(--kido-gold-aged-shadow),0 7px 8px #000;
+}
+/* AGED_GOLD_01: recessed/plinth surfaces */
+.kq-ready .kq-scene-plinth,.kq-ready .kq-cupola{
+ border-color:var(--kido-gold-aged-hi);
+}
+/* WARM_IVORY_01: readable highlight, never used as body copy on light surfaces */
+.kq-ready .kq-brand p,.kq-ready .kq-brahma-top p,.kq-ready .kq-tile{color:var(--kido-ivory)}
+.kq-ready .kq-brand h1,.kq-ready .kq-brahma-top h2{filter:drop-shadow(0 2px 0 var(--kido-gold-polished-shadow))}
+@media(prefers-reduced-motion:reduce){.kq-ready *,.kq-ready *:before,.kq-ready *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
