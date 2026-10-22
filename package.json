@@ -1,0 +1,1 @@
+{"name":"kido-g","private":true,"scripts":{"dev":"node tools/preview.mjs","check":"node --check quantum-kingdom.js && node --check brahma-memory.js"}}
