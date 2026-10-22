@@ -1,0 +1,35 @@
+/* KiDO Quantum Kingdom - visual layer; original chat/login/backend untouched */
+:root{--gold:#ffd477;--royal:#b77b22}
+body{background:radial-gradient(ellipse at 50% 12%,#5a2c07 0%,#160b08 42%,#040407 85%)!important}
+body:before{background:radial-gradient(circle at 50% 10%,#f7b44816,transparent 42%),repeating-linear-gradient(90deg,#e7aa1810 0 1px,transparent 1px 42px)!important;animation:kingdomGlow 8s ease-in-out infinite alternate}
+@keyframes kingdomGlow{to{opacity:.35;filter:hue-rotate(16deg)}}@keyframes royalFloat{50%{transform:translateY(-9px)}}@keyframes royalSpin{to{transform:rotate(360deg)}}@keyframes royalSweep{to{background-position:200% 0}}
+.app{position:relative;border-left:3px solid #bd7d25!important;border-right:3px solid #bd7d25!important;box-shadow:inset 0 0 30px #eaa32820,0 0 45px #c7852933;background:linear-gradient(165deg,#1c0e0bce,#070508f0)!important}
+header{background:linear-gradient(100deg,#1e110a,#3a220c,#130c0b);border-bottom:1px solid #b98942!important;border-radius:0 0 16px 16px;padding:12px 9px!important}
+.title b{font-size:21px!important;background:linear-gradient(100deg,#fff4bf,#ffad33,#fff2bb);background-clip:text;color:transparent;letter-spacing:1px}
+.avatar{border:2px solid #ffe19a;box-shadow:0 0 18px #ff9a22!important}
+.chat{padding:10px 5px 142px!important}
+.kq-banner{position:relative;overflow:hidden;border:1px solid #c79540;border-radius:20px;margin:6px 0 10px;padding:13px 12px;background:linear-gradient(145deg,#45200b,#0d0d19 65%,#241609);box-shadow:inset 0 0 22px #f4a93418,0 8px 24px #0009}
+.kq-banner:before{content:"";position:absolute;width:130px;height:130px;right:-30px;top:-35px;border-radius:50%;border:2px solid #d6a24470;box-shadow:0 0 35px #ffad3540;animation:royalSpin 30s linear infinite}
+.kq-banner h1{font-size:25px;line-height:1.1;margin:3px 0;color:#ffe4a0;text-shadow:0 0 18px #f2a21a55}
+.kq-banner p{font-size:11px;color:#e8c38b;margin:5px 0 0}.kq-eyebrow{font-size:10px;letter-spacing:2px;color:#f9c66b}
+.kq-orbit{position:absolute;right:13px;top:29px;font-size:42px;filter:drop-shadow(0 0 13px #48c8ff);animation:royalFloat 4s ease-in-out infinite}
+.kq-nav{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px}
+.kq-nav a,.kq-nav button{white-space:nowrap;text-decoration:none;font-size:11px;color:#ffe2a5;border:1px solid #a97531;border-radius:20px;background:#231509;padding:8px 10px;flex:none}
+.kq-section-title{display:flex;align-items:center;justify-content:space-between;margin:10px 2px 8px;color:#ffe4a0;font-size:14px;font-weight:800}
+.kq-section-title small{font-size:9px;color:#a99b88;font-weight:400}
+.kq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.kq-tile{min-height:99px;padding:11px 4px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;text-align:center;border:1px solid #d59a43;border-radius:16px;background:radial-gradient(circle at 50% 0%,#5b350d,#1c1111 65%,#0b0a0f);color:#ffe6af;text-decoration:none;box-shadow:inset 0 1px #fff1a52e,0 4px 16px #0008;font-family:inherit;cursor:pointer}
+.kq-tile:active{transform:scale(.97)}.kq-tile .kq-icon{font-size:27px;filter:drop-shadow(0 0 9px #ffc54e88)}.kq-tile b{font-size:10px}.kq-tile small{font-size:8px;color:#c6a781}
+.kq-actions{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+.kq-actions button{flex:none;border-radius:18px;padding:7px 11px;border:1px solid #ae813e;background:#24150c;color:#ffdba1;font-size:11px}
+.hero{display:none!important}.terminal{margin:6px 0!important;background:#130f13!important;border-color:#a57534!important}.termhead{color:#ffd28a!important}
+.composer{z-index:60;background:linear-gradient(transparent,#080609 18%,#080609 100%)!important}
+.composer .box{border:1px solid #e3a746!important;background:#1b1211!important;box-shadow:0 0 22px #c88a2738!important}
+.send{background:linear-gradient(130deg,#fff0ac,#ffae30,#d8790c)!important}
+.kq-dock{position:fixed;z-index:59;bottom:calc(86px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 36px),490px);display:flex;justify-content:space-around;padding:6px;background:#140c0de8;border:1px solid #bb8a41;border-radius:22px;backdrop-filter:blur(14px)}
+.kq-dock button{background:transparent;border:0;color:#f8d7a0;display:grid;gap:2px;place-items:center;font-size:9px}.kq-dock span{font-size:18px}
+.kq-old-section{display:none!important}
+.kq-more{display:none;padding:9px;border:1px solid #9f763d;border-radius:15px;background:#1c1110;margin-bottom:10px}.kq-more.open{display:block}
+.kq-more a{display:block;color:#ffe0a6;padding:9px;border-bottom:1px solid #ffffff12}
+@media(min-width:700px){.app{max-width:520px;border-radius:32px!important;margin:14px auto;height:calc(100dvh - 28px)!important}.composer{bottom:14px!important}.kq-dock{bottom:100px}}
+@media(prefers-reduced-motion:reduce){body:before,.kq-orbit,.kq-banner:before{animation:none!important}}
