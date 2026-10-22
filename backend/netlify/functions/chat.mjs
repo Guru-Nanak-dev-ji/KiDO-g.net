@@ -54,7 +54,8 @@ export default async function handler(request) {
 
     const payload = JSON.parse(raw);
     message = payload.message;
-    var searchMode = payload.search === true;
+    var newsMode = payload.news === true;
+    var searchMode = payload.search === true || newsMode;
   } catch {
     return reply(400, { error: "Invalid JSON" });
   }
@@ -84,9 +85,9 @@ export default async function handler(request) {
         model: "gpt-4.1-mini",
         instructions:
           "You are BRAHMA of KIDO ONE. Reply in Hindi. Provide text advice only. Never execute commands, publish, or approve actions. Human approval is required.",
-        input: message,
+        input: newsMode ? "Find recent, reliably sourced news relevant to the user query. Include publication dates when available, distinguish reporting dates from event dates, avoid inventing headlines, and cite sources. User query: "+message : message,
         ...(searchMode ? { tools: [{ type: "web_search" }], tool_choice: "auto" } : {}),
-        max_output_tokens: searchMode ? 800 : 150
+        max_output_tokens: newsMode ? 1200 : (searchMode ? 800 : 150)
       }),
       signal: AbortSignal.timeout(25000)
     });
@@ -110,7 +111,8 @@ export default async function handler(request) {
 
     return reply(200, {
       answer: answer || "No text returned",
-      sources: searchMode ? sources : [],
+      sources: searchMode ? [...new Map(sources.map(s => [s.url, s])).values()].slice(0,10) : [],
+      mode: newsMode ? "news" : (searchMode ? "search" : "chat"),
       execution: "DISABLED"
     });
   } catch {
