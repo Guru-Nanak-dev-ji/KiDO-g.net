@@ -50,8 +50,9 @@
       <input id="bm-password" type="password"
         autocomplete="current-password"
         placeholder="Password">
-      <button id="bm-signin">Login</button>
-      <button id="bm-signup">Sign Up</button>
+      <button type="button" id="bm-signin">Login</button>
+      <button type="button" id="bm-signup">Sign Up</button>
+      <div class="note" id="bm-action" role="alert" aria-live="polite" style="padding:8px 0;color:#ffcc8b"></div>
     </div>
     <div id="bm-user" hidden>
       <button id="bm-new">New Chat</button>
@@ -178,11 +179,13 @@
   }
 
   async function authenticate(signup) {
+    $("bm-action").textContent = signup ? "Sign Up दबाया गया — जाँच जारी…" : "Login दबाया गया — जाँच जारी…";
     const email = $("bm-email").value.trim();
     const password = $("bm-password").value;
 
     if (!email || !password) {
       note("Email और Password भरें।");
+      $("bm-action").textContent = "पहले Email और Password भरें।";
       return;
     }
 
@@ -201,6 +204,7 @@
 
       if (!data.access_token) {
         note("Email confirmation के बाद Login करें।");
+        $("bm-action").textContent = "Sign Up अनुरोध पूरा हुआ। Email Inbox जाँचें।";
         return;
       }
 
@@ -213,7 +217,9 @@
       conversationId = null;
       $("bm-password").value = "";
       persist();
+      $("bm-action").textContent = "Login सफल हुआ।";
     } catch (error) {
+      $("bm-action").textContent = "⚠️ " + error.message;
       note("⚠️ " + error.message);
     } finally {
       $("bm-signin").disabled = false;
