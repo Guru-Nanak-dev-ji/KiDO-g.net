@@ -92,11 +92,11 @@ export default async function handler(request) {
         ...(searchMode ? { tools: [{ type: "web_search" }], tool_choice: "auto" } : {}),
         max_output_tokens: (newsMode || socialMode || upscMode || govtMode) ? 1200 : (searchMode ? 800 : 150)
       }),
-      signal: AbortSignal.timeout(25000)
+      signal: AbortSignal.timeout(searchMode ? 55000 : 25000)
     });
 
     if (!response.ok) {
-      return reply(502, { error: "AI request failed" });
+      return reply(response.status === 429 ? 429 : 502, { error: response.status === 429 ? "AI rate limit reached; retry later" : "AI request failed" });
     }
 
     const data = await response.json();
