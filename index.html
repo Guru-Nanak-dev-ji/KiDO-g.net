@@ -462,6 +462,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 <div id="terminal" class="screen"><strong>READY</strong>  /api/chat connected on demand
 Execution: DISABLED · Internal services: PRIVATE</div>
 </div>
+<div style="padding:8px 14px;color:#ffcf9a;font-size:12px"><label><input type="checkbox" id="brahma-web-search"> 🔎 Live Web Search / Social Accounts (deploy pending)</label></div>
 <div class="quick">
 <button data-q="KIDO के बारे में बताओ">🍊 KIDO</button>
 <button data-q="आज KDN के लिए क्या कर सकते हैं?">🌍 KDN</button>
@@ -639,7 +640,7 @@ async function ask(prefill){
  status("REQUEST","POST /api/chat");timer.textContent="0.0s";
  const tick=setInterval(()=>timer.textContent=((performance.now()-start)/1000).toFixed(1)+"s",100);
  try{
-  const r=await fetch("https://kido-brahma-ai.netlify.app/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
+  const r=await fetch("https://kido-brahma-ai.netlify.app/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({search:document.getElementById("brahma-web-search").checked,message:"[Reply language: "+language.options[language.selectedIndex].text+"]\n"+text,...(pendingImage?{image:{mime:pendingImage.mime,data:pendingImage.data}}:{}),...(pendingFile?{file:{name:pendingFile.name,mime:pendingFile.mime,data:pendingFile.data}}:{})})});
   status("RESPONSE","HTTP "+r.status+" · parsing JSON");
   const contentType=r.headers.get("content-type")||"";
   if(!contentType.toLowerCase().includes("application/json")){
@@ -648,6 +649,7 @@ async function ask(prefill){
   const d=await r.json();
   if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
   out.textContent=d.answer||"कोई उत्तर नहीं मिला।";
+  if(Array.isArray(d.sources)&&d.sources.length){const links=document.createElement("div");links.style.cssText="font-size:12px;margin-top:8px;overflow-wrap:anywhere";links.append("Sources: ");for(const s of d.sources.slice(0,8)){try{const u=new URL(s.url);if(!["https:","http:"].includes(u.protocol))continue;const a=document.createElement("a");a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=s.title||u.hostname;links.append(a," · ");}catch{}}out.appendChild(links);}
   if(window.BrahmaMemory) void window.BrahmaMemory.savePair(text,out.textContent);
    if(pendingImage){pendingImage=null;imageInput.value="";}
    if(pendingFile){pendingFile=null;fileInput.value="";}
