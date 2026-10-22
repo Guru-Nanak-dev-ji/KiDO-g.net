@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "lane": "KDN-R16-GOLD-IVORY-MATERIALS-01",
+  "integration_target": "Guru-Nanak-dev-ji/KiDO-g.net@kido-restore",
+  "origin": "procedural/code-defined",
+  "rights_state": "PROJECT_GENERATED_NO_EXTERNAL_TEXTURES",
+  "external_dependencies": [],
+  "materials": [
+    {
+      "id": "POLISHED_GOLD_01",
+      "base_color": "#D4AF37",
+      "metalness": 1,
+      "roughness": 0.15,
+      "clearcoat": 0.55,
+      "normal_strategy": "none; CSS highlight/shadow approximation",
+      "range": {
+        "metalness": [
+          0.9,
+          1
+        ],
+        "roughness": [
+          0.1,
+          0.22
+        ]
+      },
+      "use": "outer frame, premium edges",
+      "readability": "decorative surface; text remains ivory/navy"
+    },
+    {
+      "id": "BRUSHED_GOLD_01",
+      "base_color": "#C89B2C",
+      "metalness": 0.92,
+      "roughness": 0.3,
+      "clearcoat": 0.25,
+      "normal_strategy": "procedural directional fine-grain CSS gradient",
+      "range": {
+        "metalness": [
+          0.82,
+          1
+        ],
+        "roughness": [
+          0.24,
+          0.42
+        ]
+      },
+      "use": "door/gate surfaces",
+      "readability": "avoid gold-on-gold labels"
+    },
+    {
+      "id": "AGED_GOLD_01",
+      "base_color": "#9C6A24",
+      "metalness": 0.82,
+      "roughness": 0.48,
+      "clearcoat": 0.08,
+      "normal_strategy": "procedural recessed-value variation",
+      "range": {
+        "metalness": [
+          0.7,
+          0.92
+        ],
+        "roughness": [
+          0.38,
+          0.62
+        ]
+      },
+      "use": "plinths, recesses, secondary architecture",
+      "readability": "not for small body text"
+    },
+    {
+      "id": "WARM_IVORY_01",
+      "base_color": "#F1E5C8",
+      "metalness": 0,
+      "roughness": 0.62,
+      "clearcoat": 0.18,
+      "normal_strategy": "smooth/marble-like tonal strategy; no texture image",
+      "range": {
+        "metalness": [
+          0,
+          0.05
+        ],
+        "roughness": [
+          0.5,
+          0.78
+        ]
+      },
+      "use": "readable highlights and restrained marble accents",
+      "readability": "use against deep navy/black; preserve strong contrast"
+    }
+  ],
+  "certification": "local visual study only; not browser/device/GPU/production certification"
+}
