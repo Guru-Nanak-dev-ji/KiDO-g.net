@@ -648,6 +648,7 @@ async function ask(prefill){
   const d=await r.json();
   if(!r.ok)throw new Error(d.error||("HTTP "+r.status));
   out.textContent=d.answer||"कोई उत्तर नहीं मिला।";
+  if(window.BrahmaMemory) void window.BrahmaMemory.savePair(text,out.textContent);
    if(pendingImage){pendingImage=null;imageInput.value="";}
    if(pendingFile){pendingFile=null;fileInput.value="";}
    input.placeholder="अपनी बात लिखिए…";
@@ -664,5 +665,6 @@ input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventD
 input.addEventListener("input",()=>{input.style.height="44px";input.style.height=Math.min(input.scrollHeight,125)+"px"});
 document.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>ask(b.dataset.q)));
 </script>
+<script src="./brahma-memory.js" defer></script>
 </body>
 </html>
