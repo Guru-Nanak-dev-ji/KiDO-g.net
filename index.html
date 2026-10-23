@@ -411,6 +411,45 @@ filePicker.addEventListener('change',()=>{const f=filePicker.files[0];if(!f)retu
 document.getElementById('sheet-close').addEventListener('click',closeSheet);
 sheet.addEventListener('click',event=>{if(event.target===sheet){const r=sheet.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeSheet();}});
 sheet.addEventListener('close',()=>{if(lastTrigger&&lastTrigger.isConnected)lastTrigger.focus({preventScroll:true});});
+/* KIDO-G functional enhancements: browser-only utilities; no AI credentials or server calls. */
+(() => {
+'use strict';
+function start(){
+ const box=document.getElementById('sheet-content'), dlg=document.getElementById('sheet'), input=document.getElementById('chat-input');
+ if(!box||!dlg||!input)return;
+ const key='kido-g-quantum-chat-v1';
+ const safeRead=()=>{try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v.slice(-60):[]}catch{return []}};
+ const safeWrite=v=>{try{localStorage.setItem(key,JSON.stringify(v.slice(-60)))}catch{}};
+ function actionButton(label,fn){const b=document.createElement('button');b.type='button';b.className='sheet-action';b.textContent=label;b.addEventListener('click',fn);return b}
+ function addExtras(){
+ if(!dlg.open||box.querySelector('[data-kido-extra]'))return;
+ const title=document.getElementById('sheet-title')?.textContent||'';
+ const wrap=document.createElement('div');wrap.dataset.kidoExtra='1';
+ if(title==='Chat'){
+  const past=safeRead();
+  if(past.length){const h=document.createElement('p');h.className='sheet-label';h.textContent='इस डिवाइस पर सहेजे गए पिछले संदेश';wrap.append(h);for(const v of past.slice(-8)){const p=document.createElement('p');p.className='chat-bubble';p.textContent=v;wrap.append(p)}}
+  wrap.append(actionButton('चैट कॉपी करें',()=>{const text=safeRead().join('\n\n');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).catch(()=>{});else alert(text||'अभी कोई संदेश नहीं है।')}));
+  wrap.append(actionButton('चैट इतिहास मिटाएँ',()=>{localStorage.removeItem(key);wrap.querySelectorAll('.chat-bubble').forEach(n=>n.remove());alert('इस डिवाइस का सहेजा हुआ इतिहास मिटा दिया गया।')}));
+  wrap.append(actionButton('AI सहायता के लिए ChatGPT खोलें ↗',()=>window.open('https://chatgpt.com/','_blank','noopener,noreferrer')));
+ }
+ if(title.startsWith('Search')){
+  wrap.append(actionButton('पूरे वेब में खोजें ↗',()=>{const q=box.querySelector('input.sheet-search')?.value.trim()||input.value.trim();if(!q){alert('पहले खोज लिखें।');return;}window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener,noreferrer')}));
+ }
+ if(title==='Menu'||title==='TOOLS & MORE'){
+  wrap.append(actionButton('वेब खोज ↗',()=>window.open('https://www.google.com/','_blank','noopener,noreferrer')));
+  wrap.append(actionButton('साइट का लिंक शेयर करें',()=>{if(navigator.share)navigator.share({title:'KIDO-G Quantum Kingdom',url:location.origin}).catch(()=>{});else if(navigator.clipboard?.writeText)navigator.clipboard.writeText(location.origin).catch(()=>{})}));
+ }
+ if(wrap.children.length)box.append(wrap);
+ }
+ const observer=new MutationObserver(()=>{if(dlg.open)queueMicrotask(addExtras)});
+ observer.observe(box,{childList:true});dlg.addEventListener('close',()=>{});
+ document.getElementById('chat-form')?.addEventListener('submit',()=>{const value=input.value.trim();if(value){const past=safeRead();past.push(value);safeWrite(past)}},true);
+ const mic=document.querySelector('button[data-action="microphone"]');
+ if(mic){mic.addEventListener('click',event=>{const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;if(!Speech)return;event.stopImmediatePropagation();const recognition=new Speech();recognition.lang='hi-IN';recognition.interimResults=false;recognition.onresult=e=>{input.value=(input.value+' '+e.results[0][0].transcript).trim();input.focus()};recognition.onerror=()=>alert('आवाज़ पहचान उपलब्ध नहीं है। कृपया टेक्स्ट लिखें।');recognition.start()},true)}
+ const style=document.createElement('style');style.textContent='.sheet-content [data-kido-extra]{margin-top:16px;padding-top:10px;border-top:1px solid #6e5129}.sheet-content [data-kido-extra] .sheet-action{font-size:14px}';document.head.append(style);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
 /* KIDO-G decorative falcon: local animation only, no network or storage. */
 (() => {
   'use strict';
