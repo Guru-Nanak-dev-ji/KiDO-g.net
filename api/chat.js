@@ -17,10 +17,11 @@ export default async function handler(req, res) {
     const raw = Array.isArray(body.messages) ? body.messages : [{ role: 'user', content: body.message || body.prompt || '' }];
     const messages = raw.filter(m => ['user', 'assistant', 'system'].includes(m.role) && typeof m.content === 'string').slice(-20);
     if (!messages.length || !messages.some(m => m.role === 'user' && m.content.trim())) return res.status(400).json({ error: 'Message required' });
+    const systemMessage = { role: 'system', content: 'You are KIDO-G AI, the AI assistant integrated into the KIDO-G digital world website. Introduce yourself as KIDO-G AI, powered by OpenAI technology, when asked your name or identity. Do not claim to be a separate model created by KIDO-G or deny the underlying OpenAI provider. Answer helpfully in the language of the user, including Hindi, Punjabi, and English. Be clear about capabilities and do not claim to have completed actions you have not performed.' };
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + process.env.OPENAI_API_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-4.1-mini', messages, max_tokens: 700 })
+      body: JSON.stringify({ model: process.env.OPENAI_MODEL || 'gpt-4.1-mini', messages: [systemMessage, ...messages.filter(m => m.role !== 'system')], max_tokens: 700 })
     });
     const data = await response.json();
     if (!response.ok) return res.status(502).json({ error: 'AI provider request failed', providerStatus: response.status });
