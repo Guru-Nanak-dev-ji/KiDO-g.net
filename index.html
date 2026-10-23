@@ -489,13 +489,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   // Other menu panels reuse this dialog; return to the same chat transcript on reopening.
   const restoreChat=()=>{if(chatStarted){body.replaceChildren();for(const m of history)bubble(m.content,m.role==='user'?'user':'assistant');}};
 
-  window.openKidoContinuousChat=()=>{if(dlg.open&&title.textContent!=='KIDO-G AI Chat'){body.replaceChildren();restoreChat();}show();field.focus();};
+  function launchFromMain(){
+    if(dlg.open&&title.textContent!=='KIDO-G AI Chat'){body.replaceChildren();restoreChat();}
+    const draft=mainInput.value;
+    mainInput.value='';
+    show();
+    if(draft)field.value=draft;
+    requestAnimationFrame(()=>field.focus({preventScroll:true}));
+  }
+  window.openKidoContinuousChat=launchFromMain;
+  // On Android, opening a modal after the keyboard's Enter action can dismiss it.
+  // Open the actual chat composer on the first tap instead of using the home input as an editor.
+  mainInput.addEventListener('pointerdown',event=>{event.preventDefault();launchFromMain();},true);
+  mainInput.addEventListener('focus',()=>{if(!dlg.open)launchFromMain();},true);
   function bubble(text,role){
    const node=document.createElement('div');node.className='kido-msg kido-'+role;node.textContent=text;body.appendChild(node);body.scrollTop=body.scrollHeight;return node;
   }
   async function ask(message){
    if(busy||!message.trim())return;
-   busy=true;send.disabled=true;mainInput.blur();show();
+   busy=true;send.disabled=true;show();
    history.push({role:'user',content:message.trim()});
    bubble(message.trim(),'user');
    const pending=bubble('AI से उत्तर लिया जा रहा है…','assistant');
