@@ -471,7 +471,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     const response=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message}),signal:AbortSignal.timeout(30000)});
     const data=await response.json();
     status.textContent=response.ok&&data.answer?data.answer:(data.error||'AI सेवा अभी उपलब्ध नहीं है।');
-   }catch{status.textContent='AI सर्वर से संपर्क नहीं हो पाया। थोड़ी देर बाद फिर कोशिश करें।'}
+   }catch(error){status.textContent=error?.name==='TimeoutError'?'AI सर्वर ने 30 सेकंड में जवाब नहीं दिया।': 'AI सर्वर तक अनुरोध नहीं पहुँच रहा (नेटवर्क, CORS या Vercel सुरक्षा)।';const detail=document.createElement('small');detail.textContent='API: kido-g-ai-api.vercel.app/api/chat';status.append(document.createElement('br'),detail);}
    busy=false;
   },true);
  }
