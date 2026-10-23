@@ -457,6 +457,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const mainForm=document.getElementById('chat-form'),mainInput=document.getElementById('chat-input'),dlg=document.getElementById('sheet'),body=document.getElementById('sheet-content'),title=document.getElementById('sheet-title');
   if(!mainForm||!mainInput||!dlg||!body||!title)return;
   let busy=false;
+  let chatStarted=false;
   const history=[];
   const style=document.createElement('style');
   style.textContent=`
@@ -479,17 +480,22 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const send=document.createElement('button');send.type='submit';send.textContent='भेजें';
   compose.append(field,send);
   function show(){
+   if(!chatStarted){body.replaceChildren();chatStarted=true;}
    dlg.classList.add('kido-chat-open');title.textContent='KIDO-G AI Chat';
    if(!dlg.open)dlg.showModal();
    if(compose.parentNode!==dlg)dlg.appendChild(compose);
   }
-  window.openKidoContinuousChat=()=>{show();field.focus();};
+  dlg.addEventListener('close',()=>{dlg.classList.remove('kido-chat-open');});
+  // Other menu panels reuse this dialog; return to the same chat transcript on reopening.
+  const restoreChat=()=>{if(chatStarted){body.replaceChildren();for(const m of history)bubble(m.content,m.role==='user'?'user':'assistant');}};
+
+  window.openKidoContinuousChat=()=>{if(dlg.open&&title.textContent!=='KIDO-G AI Chat'){body.replaceChildren();restoreChat();}show();field.focus();};
   function bubble(text,role){
    const node=document.createElement('div');node.className='kido-msg kido-'+role;node.textContent=text;body.appendChild(node);body.scrollTop=body.scrollHeight;return node;
   }
   async function ask(message){
    if(busy||!message.trim())return;
-   busy=true;send.disabled=true;show();
+   busy=true;send.disabled=true;mainInput.blur();show();
    history.push({role:'user',content:message.trim()});
    bubble(message.trim(),'user');
    const pending=bubble('AI से उत्तर लिया जा रहा है…','assistant');
@@ -515,11 +521,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const sendButton=mainForm.querySelector('button[type="submit"]');
   if(sendButton)sendButton.addEventListener('click',submitMain,true);
   mainInput.addEventListener('keydown',event=>{
-    if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229)submitMain(event);
+    if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing)submitMain(event);
   },true);
   mainInput.addEventListener('keyup',event=>{
     if(event.key==='Enter'&&!event.isComposing&&mainInput.value.trim()&&!busy)submitMain(event);
   },true);
+  // Keep the chat composer as the only input after the first message.
   compose.addEventListener('submit',event=>{event.preventDefault();const value=field.value.trim();if(!value||busy)return;field.value='';ask(value);});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
