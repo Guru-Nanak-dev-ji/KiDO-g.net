@@ -450,30 +450,61 @@ function start(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
-/* KIDO-G secure remote AI chat bridge */
+/* KIDO-G continuous conversation — preserve existing site design */
 (()=>{
  const API='https://kido-g-ai-api.vercel.app/api/chat';
  function boot(){
-  const form=document.getElementById('chat-form'),input=document.getElementById('chat-input'),dlg=document.getElementById('sheet'),body=document.getElementById('sheet-content'),title=document.getElementById('sheet-title');
-  if(!form||!input||!dlg||!body)return;
+  const mainForm=document.getElementById('chat-form'),mainInput=document.getElementById('chat-input'),dlg=document.getElementById('sheet'),body=document.getElementById('sheet-content'),title=document.getElementById('sheet-title');
+  if(!mainForm||!mainInput||!dlg||!body||!title)return;
   let busy=false;
-  form.addEventListener('submit',async event=>{
-   event.preventDefault();event.stopImmediatePropagation();
-   if(busy)return;
-   const message=input.value.trim();if(!message)return;
-   input.value='';busy=true;
-   title.textContent='KIDO-G AI Chat';body.replaceChildren();
+  const history=[];
+  const style=document.createElement('style');
+  style.textContent=`
+   #sheet.kido-chat-open{width:min(94vw,680px);max-width:680px;height:min(82dvh,760px);max-height:82dvh;display:flex;flex-direction:column;padding:0;overflow:hidden}
+   #sheet.kido-chat-open:not([open]){display:none}
+   #sheet.kido-chat-open .sheet-head{flex:0 0 auto}
+   #sheet.kido-chat-open .sheet-content{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:12px;padding:18px}
+   #sheet.kido-chat-open .kido-msg{max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:17px;padding:12px 15px;line-height:1.55;font-size:15px}
+   #sheet.kido-chat-open .kido-user{align-self:flex-end;background:#293431;color:#fff;border:1px solid #59675d}
+   #sheet.kido-chat-open .kido-assistant{align-self:flex-start;background:#1b1409;color:#f3ddb2;border:1px solid #74582d}
+   #sheet.kido-chat-open .kido-compose{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:12px 14px max(12px,env(safe-area-inset-bottom));border-top:1px solid #75572a;background:#171107}
+   #sheet.kido-chat-open .kido-compose input{flex:1;min-width:0;padding:13px;border:1px solid #74582d;border-radius:14px;background:#28312e;color:white;font:inherit}
+   #sheet.kido-chat-open .kido-compose button{padding:12px 16px;border:1px solid #bd9046;border-radius:14px;background:#5c4018;color:#ffe2a0;font:inherit;cursor:pointer}
+   #sheet.kido-chat-open .kido-compose button:disabled{opacity:.55}
+   @media(max-width:600px){#sheet.kido-chat-open{width:96vw;max-height:86dvh;height:80dvh}#sheet.kido-chat-open .sheet-content{padding:12px}}
+  `;
+  document.head.appendChild(style);
+  const compose=document.createElement('form');compose.className='kido-compose';
+  const field=document.createElement('input');field.type='text';field.placeholder='अपना अगला सवाल लिखें…';field.setAttribute('aria-label','अगला संदेश');field.maxLength=12000;
+  const send=document.createElement('button');send.type='submit';send.textContent='भेजें';
+  compose.append(field,send);
+  function show(){
+   dlg.classList.add('kido-chat-open');title.textContent='KIDO-G AI Chat';
    if(!dlg.open)dlg.showModal();
-   const make=(t,cls)=>{const e=document.createElement('div');e.className=cls;e.textContent=t;body.appendChild(e);return e};
-   make(message,'chat-bubble');
-   const status=make('AI से उत्तर लिया जा रहा है…','connection-note');
+   if(compose.parentNode!==dlg)dlg.appendChild(compose);
+  }
+  function bubble(text,role){
+   const node=document.createElement('div');node.className='kido-msg kido-'+role;node.textContent=text;body.appendChild(node);body.scrollTop=body.scrollHeight;return node;
+  }
+  async function ask(message){
+   if(busy||!message.trim())return;
+   busy=true;send.disabled=true;show();
+   history.push({role:'user',content:message.trim()});
+   bubble(message.trim(),'user');
+   const pending=bubble('AI से उत्तर लिया जा रहा है…','assistant');
    try{
-    const response=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message}),signal:AbortSignal.timeout(30000)});
+    const response=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history.slice(-20)}),signal:AbortSignal.timeout(45000)});
     const data=await response.json();
-    status.textContent=response.ok&&data.answer?data.answer:(data.error||'AI सेवा अभी उपलब्ध नहीं है।');
-   }catch(error){status.textContent=error?.name==='TimeoutError'?'AI सर्वर ने 30 सेकंड में जवाब नहीं दिया।': 'AI सर्वर तक अनुरोध नहीं पहुँच रहा (नेटवर्क, CORS या Vercel सुरक्षा)।';const detail=document.createElement('small');detail.textContent='API: kido-g-ai-api.vercel.app/api/chat';status.append(document.createElement('br'),detail);}
-   busy=false;
-  },true);
+    const answer=response.ok?(data.answer||data.reply||data.response||data.message):'';
+    if(!answer)throw new Error(data.error||'AI सेवा अभी उपलब्ध नहीं है।');
+    pending.textContent=answer;history.push({role:'assistant',content:answer});
+   }catch(error){
+    pending.textContent=error?.name==='TimeoutError'?'AI जवाब देने में समय लगा। फिर कोशिश करें।':(error?.message||'AI से संपर्क नहीं हो पाया।');
+    history.pop();
+   }finally{busy=false;send.disabled=false;body.scrollTop=body.scrollHeight;field.focus();}
+  }
+  mainForm.addEventListener('submit',event=>{event.preventDefault();event.stopImmediatePropagation();const value=mainInput.value.trim();if(!value)return;mainInput.value='';ask(value);},true);
+  compose.addEventListener('submit',event=>{event.preventDefault();const value=field.value.trim();if(!value||busy)return;field.value='';ask(value);});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
