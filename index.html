@@ -282,7 +282,7 @@ body.keyboard-open .ai-panel{grid-area:chat}body.keyboard-open .dock{grid-area:d
 <div class="ai-heading"><div class="avatar-art"><svg class="artwork " viewBox="238 461 136 153" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><use href="#reference-art"/></svg></div><div class="ai-heading-text"><h2 class="ai-title metal" id="ai-title">पूछिए…</h2><p class="ai-subtitle">Ask · Search · Create · Learn</p></div></div>
 <form class="chat-form" id="chat-form">
 <button class="icon-button plus-button" type="button" data-action="files" aria-label="फ़ाइल चुनें"><svg class="svg-icon " aria-hidden="true" focusable="false"><use href="#i-plus"/></svg></button>
-<label class="sr-only" for="chat-input">अपनी बात लिखिए</label><input class="chat-input" id="chat-input" placeholder="अपनी बात लिखिए..." autocomplete="off" maxlength="12000">
+<label class="sr-only" for="chat-input">अपनी बात लिखिए</label><input class="chat-input" id="chat-input" type="text" enterkeyhint="send" inputmode="text" placeholder="अपनी बात लिखिए..." autocomplete="off" maxlength="12000">
 <button class="icon-button microphone-button" type="button" data-action="microphone" aria-label="वॉइस इनपुट की जानकारी"><svg class="svg-icon " aria-hidden="true" focusable="false"><use href="#i-microphone"/></svg></button>
 <button class="icon-button send-button" type="submit" aria-label="संदेश भेजें"><svg class="svg-icon " aria-hidden="true" focusable="false"><use href="#i-send"/></svg></button>
 </form>
@@ -504,9 +504,22 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     history.pop();
    }finally{busy=false;send.disabled=false;body.scrollTop=body.scrollHeight;field.focus();}
   }
-  function submitMain(event){event.preventDefault();event.stopImmediatePropagation();const value=mainInput.value.trim();if(!value)return;mainInput.value='';ask(value);}
+  function submitMain(event){
+    if(event){event.preventDefault();event.stopImmediatePropagation();}
+    const value=mainInput.value.trim();
+    if(!value||busy)return;
+    mainInput.value='';
+    ask(value);
+  }
   mainForm.addEventListener('submit',submitMain,true);
-  mainInput.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();submitMain(event);}},true);
+  const sendButton=mainForm.querySelector('button[type="submit"]');
+  if(sendButton)sendButton.addEventListener('click',submitMain,true);
+  mainInput.addEventListener('keydown',event=>{
+    if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing&&event.keyCode!==229)submitMain(event);
+  },true);
+  mainInput.addEventListener('keyup',event=>{
+    if(event.key==='Enter'&&!event.isComposing&&mainInput.value.trim()&&!busy)submitMain(event);
+  },true);
   compose.addEventListener('submit',event=>{event.preventDefault();const value=field.value.trim();if(!value||busy)return;field.value='';ask(value);});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
