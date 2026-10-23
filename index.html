@@ -403,7 +403,7 @@ function showMenu(){openSheet('Menu');const grid=el('div','sheet-menu');for(cons
 function home(){closeSheet();document.querySelector('.world-tabs button[data-action="home"]').focus({preventScroll:true});}
 function chooseFile(){filePicker.click();}
 function removeFile(){filePicker.value='';attachmentName='';document.getElementById('attachment').hidden=true;}
-const actions={home,chat:renderChat,search:showSearch,menu:showMenu,files:chooseFile,kingdom:()=>{closeSheet();document.getElementById('kingdom').focus({preventScroll:true});},microphone:()=>showToast('वॉइस इनपुट अभी जुड़ा नहीं है। अपनी बात लिखिए।'),deep:()=>{deep=!deep;document.getElementById('deep-toggle').setAttribute('aria-pressed',String(deep));showToast(deep?'विस्तृत उत्तर का विकल्प चुना गया। AI सेवा अभी जुड़ी नहीं है।':'सामान्य उत्तर का विकल्प चुना गया।');},'remove-file':removeFile};
+const actions={home,chat:()=>window.openKidoContinuousChat?window.openKidoContinuousChat():renderChat(),search:showSearch,menu:showMenu,files:chooseFile,kingdom:()=>{closeSheet();document.getElementById('kingdom').focus({preventScroll:true});},microphone:()=>showToast('वॉइस इनपुट अभी जुड़ा नहीं है। अपनी बात लिखिए।'),deep:()=>{deep=!deep;document.getElementById('deep-toggle').setAttribute('aria-pressed',String(deep));showToast(deep?'विस्तृत उत्तर का विकल्प चुना गया। AI सेवा अभी जुड़ी नहीं है।':'सामान्य उत्तर का विकल्प चुना गया।');},'remove-file':removeFile};
 document.addEventListener('click',event=>{const b=event.target.closest('button[data-action],button[data-module]');if(!b)return;if(b.dataset.module)showModule(b.dataset.module);else if(actions[b.dataset.action])actions[b.dataset.action]();});
 document.getElementById('chat-form').addEventListener('submit',event=>{event.preventDefault();const text=chatInput.value.trim();if(!text){showToast('पहले अपनी बात लिखिए।');chatInput.focus();return;}messages.push({text,file:attachmentName,deep});chatInput.value='';removeFile();renderChat();});
 chatInput.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.isComposing)event.preventDefault();});
@@ -483,6 +483,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    if(!dlg.open)dlg.showModal();
    if(compose.parentNode!==dlg)dlg.appendChild(compose);
   }
+  window.openKidoContinuousChat=()=>{show();field.focus();};
   function bubble(text,role){
    const node=document.createElement('div');node.className='kido-msg kido-'+role;node.textContent=text;body.appendChild(node);body.scrollTop=body.scrollHeight;return node;
   }
