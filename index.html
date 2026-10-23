@@ -405,7 +405,7 @@ function chooseFile(){filePicker.click();}
 function removeFile(){filePicker.value='';attachmentName='';document.getElementById('attachment').hidden=true;}
 const actions={home,chat:()=>window.openKidoContinuousChat?window.openKidoContinuousChat():renderChat(),search:showSearch,menu:showMenu,files:chooseFile,kingdom:()=>{closeSheet();document.getElementById('kingdom').focus({preventScroll:true});},microphone:()=>showToast('वॉइस इनपुट अभी जुड़ा नहीं है। अपनी बात लिखिए।'),deep:()=>{deep=!deep;document.getElementById('deep-toggle').setAttribute('aria-pressed',String(deep));showToast(deep?'विस्तृत उत्तर का विकल्प चुना गया। AI सेवा अभी जुड़ी नहीं है।':'सामान्य उत्तर का विकल्प चुना गया।');},'remove-file':removeFile};
 document.addEventListener('click',event=>{const b=event.target.closest('button[data-action],button[data-module]');if(!b)return;if(b.dataset.module)showModule(b.dataset.module);else if(actions[b.dataset.action])actions[b.dataset.action]();});
-document.getElementById('chat-form').addEventListener('submit',event=>{event.preventDefault();const text=chatInput.value.trim();if(!text){showToast('पहले अपनी बात लिखिए।');chatInput.focus();return;}messages.push({text,file:attachmentName,deep});chatInput.value='';removeFile();renderChat();});
+/* Legacy local-only submit handler removed; continuous AI handler owns the form. */
 chatInput.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.isComposing)event.preventDefault();});
 filePicker.addEventListener('change',()=>{const f=filePicker.files[0];if(!f)return;attachmentName=f.name;document.getElementById('attachment-name').textContent='चुनी गई फ़ाइल: '+f.name;document.getElementById('attachment').hidden=false;showToast('फ़ाइल का नाम चुना गया है। कोई फ़ाइल अपलोड नहीं हुई।');});
 document.getElementById('sheet-close').addEventListener('click',closeSheet);
@@ -504,7 +504,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     history.pop();
    }finally{busy=false;send.disabled=false;body.scrollTop=body.scrollHeight;field.focus();}
   }
-  mainForm.addEventListener('submit',event=>{event.preventDefault();event.stopImmediatePropagation();const value=mainInput.value.trim();if(!value)return;mainInput.value='';ask(value);},true);
+  function submitMain(event){event.preventDefault();event.stopImmediatePropagation();const value=mainInput.value.trim();if(!value)return;mainInput.value='';ask(value);}
+  mainForm.addEventListener('submit',submitMain,true);
+  mainInput.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();submitMain(event);}},true);
   compose.addEventListener('submit',event=>{event.preventDefault();const value=field.value.trim();if(!value||busy)return;field.value='';ask(value);});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
