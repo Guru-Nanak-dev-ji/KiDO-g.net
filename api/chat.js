@@ -1,5 +1,14 @@
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
+  const origin = req.headers.origin;
+  const allowed = new Set(['https://www.kido-g.net', 'https://kido-g.net', 'https://kido-g-ai-api.vercel.app']);
+  if (allowed.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method === 'GET') return res.status(200).json({ ok: true, service: 'kido-chat', configured: Boolean(process.env.OPENAI_API_KEY) });
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'AI is not configured on the server' });
@@ -16,7 +25,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     if (!response.ok) return res.status(502).json({ error: 'AI provider request failed', providerStatus: response.status });
     const reply = data.choices?.[0]?.message?.content || '';
-    return res.status(200).json({ reply, response: reply, message: reply });
+    return res.status(200).json({ answer: reply, reply, response: reply, message: reply });
   } catch (error) {
     return res.status(500).json({ error: 'Chat request failed' });
   }
