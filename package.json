@@ -1,1 +1,8 @@
-{"name":"kido-g","private":true,"scripts":{"dev":"node tools/preview.mjs","check":"node --check quantum-kingdom.js && node --check brahma-memory.js"}}
+{
+  "name": "kido-g",
+  "private": true,
+  "scripts": {
+    "dev": "node tools/preview.mjs",
+    "check": "node --check quantum-kingdom.js && node --check brahma-memory.js && node --check brahma-preview.js && node --check backend/netlify/functions/chat.mjs && node tools/check-brahma-preview.mjs"
+  }
+}
