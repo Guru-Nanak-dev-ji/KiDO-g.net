@@ -440,11 +440,11 @@ function start(){
   const pageTitle=document.title||'KIDO-G';
   const pageUrl=location.href;
   const draftMessage=input.value.trim();
-  const shareText=['नमस्कार! KIDO-G से यह जानकारी साझा कर रहा/रही हूँ।','पेज: '+pageTitle,'लिंक: '+pageUrl,draftMessage?'संदेश: '+draftMessage:''].filter(Boolean).join('\\n\\n');
+  const shareText=['नमस्कार! KIDO-G से यह जानकारी साझा कर रहा/रही हूँ।','पेज: '+pageTitle,'लिंक: '+pageUrl,draftMessage?'संदेश: '+draftMessage:''].filter(Boolean).join('\n\n');
   const openWhatsApp=()=>{const url='https://wa.me/14372303338?text='+encodeURIComponent(shareText);window.open(url,'_blank','noopener,noreferrer');};
   wrap.append(actionButton('WhatsApp पर पूरी जानकारी शेयर करें',openWhatsApp));
   const mailSubject='KIDO-G — '+pageTitle;
-  const mailBody=shareText+'\\n\\n— KIDO-G';
+  const mailBody=shareText+'\n\n— KIDO-G';
   const mailTargets=[
    ['daljitsingh0510@gmail.com','Daljit Singh'],
    ['daisyfreeman05@gmail.com','Daisy Freeman'],
