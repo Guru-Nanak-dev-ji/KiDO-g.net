@@ -442,7 +442,7 @@ function start(){
   const draftMessage=input.value.trim();
   const shareText=['नमस्कार! KIDO-G से यह जानकारी साझा कर रहा/रही हूँ।','पेज: '+pageTitle,'लिंक: '+pageUrl,draftMessage?'संदेश: '+draftMessage:''].filter(Boolean).join('\n\n');
   const openWhatsAppShare=()=>{const url='https://wa.me/?text='+encodeURIComponent(shareText);window.open(url,'_blank','noopener,noreferrer');};
-  const openWhatsAppContact=()=>{const url='https://wa.me/14372303338?text='+encodeURIComponent('नमस्कार! मुझे KIDO-G के बारे में जानकारी चाहिए।\\n\\n'+pageUrl);window.open(url,'_blank','noopener,noreferrer');};
+  const openWhatsAppContact=()=>{const url='https://wa.me/14372303338?text='+encodeURIComponent('नमस्कार! मुझे KIDO-G के बारे में जानकारी चाहिए।\n\n'+pageUrl);window.open(url,'_blank','noopener,noreferrer');};
   wrap.append(actionButton('WhatsApp पर पूरी जानकारी शेयर करें',openWhatsAppShare));
   wrap.append(actionButton('KIDO-G WhatsApp पर संपर्क करें',openWhatsAppContact));
   const mailSubject='KIDO-G — '+pageTitle;
