@@ -437,7 +437,26 @@ function start(){
  }
  if(title==='Menu'||title==='TOOLS & MORE'){
   wrap.append(actionButton('वेब खोज ↗',()=>window.open('https://www.google.com/','_blank','noopener,noreferrer')));
-  wrap.append(actionButton('साइट का लिंक शेयर करें',()=>{if(navigator.share)navigator.share({title:'KIDO-G Quantum Kingdom',url:location.origin}).catch(()=>{});else if(navigator.clipboard?.writeText)navigator.clipboard.writeText(location.origin).catch(()=>{})}));
+  const pageTitle=document.title||'KIDO-G';
+  const pageUrl=location.href;
+  const draftMessage=input.value.trim();
+  const shareText=['नमस्कार! KIDO-G से यह जानकारी साझा कर रहा/रही हूँ।','पेज: '+pageTitle,'लिंक: '+pageUrl,draftMessage?'संदेश: '+draftMessage:''].filter(Boolean).join('\\n\\n');
+  const openWhatsApp=()=>{const url='https://wa.me/14372303338?text='+encodeURIComponent(shareText);window.open(url,'_blank','noopener,noreferrer');};
+  wrap.append(actionButton('WhatsApp पर पूरी जानकारी शेयर करें',openWhatsApp));
+  const mailSubject='KIDO-G — '+pageTitle;
+  const mailBody=shareText+'\\n\\n— KIDO-G';
+  const mailTargets=[
+   ['daljitsingh0510@gmail.com','Daljit Singh'],
+   ['daisyfreeman05@gmail.com','Daisy Freeman'],
+   ['daljitkafir05@gmail.com','Daljit Kafir 05'],
+   ['daljitkafir@gmail.com','Daljit Kafir'],
+   ['khatrinewsnetwork@gmail.com','Khatri News Network']
+  ];
+  const mailLabel=document.createElement('p');mailLabel.className='sheet-label';mailLabel.textContent='ईमेल / Comment / Feedback — पता चुनें';wrap.append(mailLabel);
+  for(const [address,label] of mailTargets){
+   wrap.append(actionButton('💌 '+label+' · '+address,()=>{location.href='mailto:'+address+'?subject='+encodeURIComponent(mailSubject)+'&body='+encodeURIComponent(mailBody);}));
+  }
+  wrap.append(actionButton('साइट का लिंक शेयर करें',()=>{if(navigator.share)navigator.share({title:pageTitle,text:'KIDO-G पर यह पेज देखें',url:pageUrl}).catch(()=>{});else if(navigator.clipboard?.writeText)navigator.clipboard.writeText(pageUrl).catch(()=>{})}));
  }
  if(wrap.children.length)box.append(wrap);
  }
